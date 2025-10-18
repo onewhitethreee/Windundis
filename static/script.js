@@ -252,6 +252,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             saveChatHistoryToStorage();
+            
+            // 更新清除按钮的可见性
+            updateClearButtonVisibility();
         }
         
         return messageDiv; 
@@ -280,6 +283,9 @@ document.addEventListener('DOMContentLoaded', () => {
         renderGoals(); // Re-render to update the 'selected' class
         
         restoreChatHistory(goalId);
+        
+        // 更新清除按钮的可见性
+        updateClearButtonVisibility();
     }
 
     async function handleSendMessage() {
@@ -453,7 +459,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         renderGoals(); 
+        updateClearButtonVisibility(); 
         saveChatHistoryToStorage(); 
+    }
+
+    function updateClearButtonVisibility() {
+        const clearBtn = document.getElementById('clearChatBtn');
+        const hasCurrentChat = state.selectedGoalId && state.chatHistory[state.selectedGoalId] && state.chatHistory[state.selectedGoalId].length > 0;
+        const hasAnyChat = Object.keys(state.chatHistory).length > 0;
+        
+        if (hasCurrentChat || hasAnyChat) {
+            clearBtn.style.display = 'block';
+        } else {
+            clearBtn.style.display = 'none';
+        }
     }
 
     function saveChatHistoryToStorage() {
@@ -533,6 +552,19 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.createGoalModalContainer.addEventListener('click', e => {
             if (e.target === elements.createGoalModalContainer) closeCreateGoalModal();
         });
+
+        // Clear chat button
+        document.getElementById('clearChatBtn').addEventListener('click', () => {
+            if (state.selectedGoalId) {
+                if (confirm('¿Estás seguro de que quieres limpiar el historial de chat para esta meta?')) {
+                    clearChatHistory(state.selectedGoalId);
+                }
+            } else {
+                if (confirm('¿Estás seguro de que quieres limpiar todo el historial de chat?')) {
+                    clearChatHistory();
+                }
+            }
+        });
     }
 
     async function initialize() {
@@ -568,6 +600,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             console.log('Selecting first goal...');
             selectGoal(1); // Select the first goal by default
+            
+            // 更新清除按钮的可见性
+            updateClearButtonVisibility();
             
             console.log('Initialization complete!');
 
