@@ -121,6 +121,10 @@
                 <i class="fas fa-plus"></i>
                 Nueva Meta
             </button>
+            <button class="create-goal-btn" id="aiSuggestBtn" style="margin-left: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <i class="fas fa-magic"></i>
+                Sugerencias AI
+            </button>
 
             <h3 style="font-size: 16px; margin-bottom: 16px;">Tus Metas de Ahorro</h3>
             <div class="goals-grid" id="goalsGrid">
@@ -499,6 +503,11 @@
                             </div>
                         </div>
                         <div class="goal-deadline">Plazo: ${goal.deadline}</div>
+                        <div class="goal-actions">
+                            <button class="add-subgoal-btn" data-goal-id="${goal.id}" title="Agregar submeta">
+                                <i class="fas fa-plus"></i> Submeta
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -524,6 +533,156 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
+        // --- ENHANCED AI FUNCTIONS FROM SCRIPT.JS ---
+        async function getAIResponse(userInput, goal) {
+            try {
+                const requestData = {
+                    question: userInput,
+                    goal: goal ? {
+                        title: goal.title,
+                        description: goal.description,
+                        current: goal.current,
+                        target: goal.target
+                    } : null
+                };
+
+                console.log('Sending AI request:', requestData);
+
+                const response = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('AI response:', result);
+                
+                if (result.success) {
+                    return result.data.response;
+                } else {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+            } catch (error) {
+                console.error('Error calling AI API:', error);
+                if (goal) {
+                    return `Sobre tu meta "${goal.title}": ${goal.description}. ¿Necesitas más detalles?`;
+                } else {
+                    return 'Selecciona una meta para obtener recomendaciones personalizadas.';
+                }
+            }
+        }
+
+        async function getMotivationalMessage(goal) {
+            try {
+                const progress = (goal.current / goal.target) * 100;
+                const requestData = {
+                    progress: progress,
+                    title: goal.title
+                };
+
+                const response = await fetch('/api/ai/motivation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    return result.data.motivation;
+                } else {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+            } catch (error) {
+                console.error('Error getting motivation:', error);
+                const progress = (goal.current / goal.target) * 100;
+                if (progress >= 100) {
+                    return `🎉 ¡Felicidades! Has completado tu meta "${goal.title}". ¡Eres increíble!`;
+                } else if (progress >= 75) {
+                    return `💪 ¡Estás muy cerca! Has completado el ${progress.toFixed(0)}% de "${goal.title}". ¡Solo un poco más!`;
+                } else if (progress >= 50) {
+                    return `🚀 ¡Excelente progreso! Has completado el ${progress.toFixed(0)}% de "${goal.title}". ¡Sigue así!`;
+                } else {
+                    return `🌟 ¡Buen comienzo! Has completado el ${progress.toFixed(0)}% de "${goal.title}". ¡Cada paso cuenta!`;
+                }
+            }
+        }
+
+        async function getTaskSubtasks(task) {
+            try {
+                const requestData = {
+                    task: task
+                };
+
+                const response = await fetch('/api/ai/subtasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    return result.data.subtasks;
+                } else {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+            } catch (error) {
+                console.error('Error getting subtasks:', error);
+                return `
+                    <div style="color: var(--text-secondary); line-height: 1.6;">
+                        <strong>📋 Plan para "${task}":</strong><br><br>
+                        1. <strong>Definir presupuesto:</strong> Establece cuánto necesitas ahorrar<br>
+                        2. <strong>Crear timeline:</strong> Define fechas límite realistas<br>
+                        3. <strong>Automatizar ahorros:</strong> Configura transferencias automáticas<br>
+                        4. <strong>Monitorear progreso:</strong> Revisa semanalmente tu avance<br>
+                        5. <strong>Ajustar estrategia:</strong> Modifica el plan según sea necesario<br><br>
+                        <em>💡 Consejo: Empieza con pasos pequeños y celebra cada logro.</em>
+                    </div>
+                `;
+            }
+        }
+
+        function handleSpecialCommands(userInput, goal) {
+            const input = userInput.toLowerCase();
+            
+            if (input.includes('dividir') || input.includes('subtareas') || input.includes('pasos')) {
+                return getTaskSubtasks(goal.title);
+            } else if (input.includes('motivación') || input.includes('motivar') || input.includes('ánimo')) {
+                return getMotivationalMessage(goal);
+            } else if (input.includes('crear meta') || input.includes('nueva meta') || input.includes('sugerir')) {
+                showAISuggestionsModal();
+                return '🤖 Abriendo el generador de sugerencias de AI...';
+            } else if (input.includes('submeta') || input.includes('sub meta')) {
+                if (userGoals.length > 0) {
+                    addSubgoal(userGoals[0].id);
+                    return '📋 Abriendo el creador de submetas...';
+                } else {
+                    return '❌ Por favor, crea una meta primero para agregar una submeta.';
+                }
+            }
+            
+            return null; 
+        }
+
         async function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const question = input.value.trim();
@@ -538,22 +697,21 @@
             sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             try {
-                const response = await fetch(`${API_BASE_URL}/ai/chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        question: question,
-                        goal: userGoals.length > 0 ? userGoals[0] : null
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    addChatMessage(data.data.response, false);
+                let response;
+                if (userGoals.length > 0) {
+                    const goal = userGoals[0];
+                    
+                    const specialResponse = handleSpecialCommands(question, goal);
+                    if (specialResponse) {
+                        response = await specialResponse;
+                    } else {
+                        response = await getAIResponse(question, goal);
+                    }
                 } else {
-                    addChatMessage('Lo siento, hubo un error. Intenta de nuevo.', false);
+                    response = await getAIResponse(question, null);
                 }
+                
+                addChatMessage(response, false);
             } catch (error) {
                 console.error('Error:', error);
                 addChatMessage('No pude conectar con el servidor. Verifica tu conexión.', false);
@@ -561,6 +719,55 @@
                 sendBtn.disabled = false;
                 sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
             }
+        }
+
+        // Enhanced AI Functions
+        function showAISuggestionsModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); display: flex; justify-content: center;
+                align-items: center; z-index: 10000;
+            `;
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%;">
+                    <h3>🤖 Sugerencias de AI</h3>
+                    <p>Basándome en tu perfil financiero, te sugiero:</p>
+                    <ul>
+                        <li>Fondo de emergencia (3-6 meses de gastos)</li>
+                        <li>Reducción de gastos en categorías altas</li>
+                        <li>Automatización de ahorros</li>
+                        <li>Inversión a largo plazo</li>
+                    </ul>
+                    <button onclick="this.closest('div').parentElement.remove()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">Cerrar</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function addSubgoal(parentGoalId) {
+            const parentGoal = userGoals.find(g => g.id === parentGoalId);
+            if (!parentGoal) return;
+            
+            const title = prompt('Título de la submeta:');
+            if (!title) return;
+            
+            const target = parseFloat(prompt('Meta (€):'));
+            if (!target || target <= 0) return;
+            
+            const subgoal = {
+                id: Date.now(),
+                title: title,
+                target: target,
+                current: 0,
+                deadline: '3 meses',
+                priority: 'medium',
+                parentId: parentGoalId
+            };
+            
+            if (!parentGoal.subgoals) parentGoal.subgoals = [];
+            parentGoal.subgoals.push(subgoal);
+            renderGoals();
         }
 
         // Event Listeners
@@ -593,17 +800,29 @@
                 target: target,
                 current: current,
                 deadline: '6 meses',
-                priority: 'medium'
+                priority: 'medium',
+                subgoals: []
             };
             
             userGoals.push(newGoal);
             renderGoals();
         });
 
+        document.getElementById('aiSuggestBtn').addEventListener('click', showAISuggestionsModal);
+
         document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
         
         document.getElementById('chatInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendChatMessage();
+        });
+
+        // Event delegation for subgoal buttons
+        document.getElementById('goalsGrid').addEventListener('click', (e) => {
+            if (e.target.closest('.add-subgoal-btn')) {
+                const button = e.target.closest('.add-subgoal-btn');
+                const goalId = parseInt(button.dataset.goalId);
+                addSubgoal(goalId);
+            }
         });
 
         document.querySelectorAll('.lang-btn').forEach(btn => {
