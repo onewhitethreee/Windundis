@@ -24,11 +24,6 @@ def index():
     """Ruta de la página principal"""
     return render_template('index.html')
 
-@app.route('/dashboard')
-def dashboard():
-    """Ruta del dashboard después del login exitoso"""
-    return render_template('dashboard.html')
-
 @app.route('/api/login', methods=['POST', 'OPTIONS'])
 def login():
     if request.method == 'OPTIONS':

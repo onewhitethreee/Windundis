@@ -1,0 +1,168 @@
+{
+    "id_cliente": "CLI001",
+    "nombre_cliente": "Ana García",
+    "fecha_actual": "2023-10-26",
+    "saldo_actual": 2500.75,
+    "movimientos_cuenta": [
+        {
+            "id_movimiento": "MOV00101",
+            "fecha": "2023-10-25",
+            "descripcion": "Compra en Supermercado DIA",
+            "categoria": "Alimentación",
+            "monto": -75.20,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00102",
+            "fecha": "2023-10-25",
+            "descripcion": "Café con amigos",
+            "categoria": "Ocio y Restaurantes",
+            "monto": -8.50,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00103",
+            "fecha": "2023-10-24",
+            "descripcion": "Pago recibo de luz",
+            "categoria": "Facturas y Servicios",
+            "monto": -65.10,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00104",
+            "fecha": "2023-10-24",
+            "descripcion": "Cena en Restaurante 'La Tapería'",
+            "categoria": "Ocio y Restaurantes",
+            "monto": -45.50,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00105",
+            "fecha": "2023-10-23",
+            "descripcion": "Suscripción Netflix",
+            "categoria": "Entretenimiento",
+            "monto": -12.99,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00106",
+            "fecha": "2023-10-23",
+            "descripcion": "Gasolina Repsol",
+            "categoria": "Transporte",
+            "monto": -40.00,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00107",
+            "fecha": "2023-10-22",
+            "descripcion": "Nómina Mensual",
+            "categoria": "Ingresos",
+            "monto": 1800.00,
+            "tipo": "Ingreso"
+        },
+        {
+            "id_movimiento": "MOV00108",
+            "fecha": "2023-10-22",
+            "descripcion": "Transporte Público - Abono",
+            "categoria": "Transporte",
+            "monto": -25.00,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00109",
+            "fecha": "2023-10-21",
+            "descripcion": "Retirada de Efectivo Cajero",
+            "categoria": "Efectivo",
+            "monto": -100.00,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00110",
+            "fecha": "2023-10-20",
+            "descripcion": "Compra online Amazon (libros)",
+            "categoria": "Compras",
+            "monto": -32.70,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00111",
+            "fecha": "2023-10-19",
+            "descripcion": "Visita al dentista",
+            "categoria": "Salud y Bienestar",
+            "monto": -80.00,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00112",
+            "fecha": "2023-10-18",
+            "descripcion": "Transferencia recibida (amigo)",
+            "categoria": "Ingresos",
+            "monto": 20.00,
+            "tipo": "Ingreso"
+        },
+        {
+            "id_movimiento": "MOV00113",
+            "fecha": "2023-10-17",
+            "descripcion": "Pago cuota gimnasio",
+            "categoria": "Salud y Bienestar",
+            "monto": -30.00,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00114",
+            "fecha": "2023-10-16",
+            "descripcion": "Recibo de internet",
+            "categoria": "Facturas y Servicios",
+            "monto": -45.99,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00115",
+            "fecha": "2023-10-15",
+            "descripcion": "Reparación de coche (taller)",
+            "categoria": "Vehículo",
+            "monto": -150.00,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00116",
+            "fecha": "2023-10-14",
+            "descripcion": "Almuerzo de trabajo",
+            "categoria": "Ocio y Restaurantes",
+            "monto": -18.75,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00117",
+            "fecha": "2023-10-13",
+            "descripcion": "Recorrido en tren",
+            "categoria": "Transporte",
+            "monto": -12.00,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00118",
+            "fecha": "2023-10-12",
+            "descripcion": "Compra en Farmacia",
+            "categoria": "Salud y Bienestar",
+            "monto": -22.50,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00119",
+            "fecha": "2023-10-11",
+            "descripcion": "Recibo de teléfono móvil",
+            "categoria": "Servicios",
+            "monto": -29.99,
+            "tipo": "Gasto"
+        },
+        {
+            "id_movimiento": "MOV00120",
+            "fecha": "2023-10-10",
+            "descripcion": "Compra semanal de supermercado",
+            "categoria": "Alimentación",
+            "monto": -90.30,
+            "tipo": "Gasto"
+        }
+    ]
+}

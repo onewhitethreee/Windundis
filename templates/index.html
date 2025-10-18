@@ -57,7 +57,7 @@
             `;
         }
         
-        // 显示成功状态并跳转到dashboard
+        // 显示成功状态
         function showSuccessState(tokenData) {
             const loginBox = document.querySelector('.login-box');
             loginBox.innerHTML = `
@@ -66,19 +66,21 @@
                     <h1>¡Éxito!</h1>
                     <p>Token obtenido correctamente</p>
                 </div>
-                <div class="processing-indicator">
-                    <div class="spinner"></div>
-                    <p>Redirigiendo al dashboard...</p>
+                <div class="token-info">
+                    <h3>Información del Token:</h3>
+                    <div class="token-details">
+                        <p><strong>Access Token:</strong></p>
+                        <textarea readonly class="token-text">${tokenData.access_token || 'N/A'}</textarea>
+                        <p><strong>Token Type:</strong> ${tokenData.token_type || 'N/A'}</p>
+                        <p><strong>Expires In:</strong> ${tokenData.expires_in || 'N/A'} segundos</p>
+                        <p><strong>Scope:</strong> ${tokenData.scope || 'N/A'}</p>
+                    </div>
                 </div>
+                <button onclick="location.reload()" class="btn btn-login">
+                    <i class="fas fa-redo"></i>
+                    Volver a Iniciar
+                </button>
             `;
-            
-            // 将token信息保存到localStorage
-            localStorage.setItem('tokenData', JSON.stringify(tokenData));
-            
-            // 延迟跳转到dashboard页面
-            setTimeout(() => {
-                window.location.href = '/dashboard';
-            }, 2000);
         }
         
         // 显示错误状态
