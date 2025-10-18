@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         metrics: null,
         goals: [],
         selectedGoalId: null,
+        chatHistory: {},
     };
 
     // --- DOM ELEMENTS ---
@@ -215,10 +216,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const progress = Math.min((goal.current / goal.target) * 100, 100);
             const priorityIcon = goal.priority === 'high' ? '🔴' : goal.priority === 'medium' ? '🟡' : '🟢';
             const isCompleted = progress >= 100;
+            
+            // 检查是否有聊天历史
+            const chatCount = state.chatHistory[goal.id] ? state.chatHistory[goal.id].length : 0;
+            const chatIndicator = chatCount > 0 ? ` <span class="chat-indicator" title="${chatCount} mensajes">💬 ${chatCount}</span>` : '';
 
             return `
                 <div class="goal-card ${isCompleted ? 'completed' : ''} ${goal.id === state.selectedGoalId ? 'selected' : ''}" data-goal-id="${goal.id}">
-                    <div class="goal-title">${priorityIcon} ${goal.title} ${isCompleted ? ' <span style="color: #48bb78; font-size: 10px;">✓</span>' : ''}</div>
+                    <div class="goal-title">${priorityIcon} ${goal.title} ${isCompleted ? ' <span style="color: #48bb78; font-size: 10px;">✓</span>' : ''}${chatIndicator}</div>
                     <div class="goal-progress"><div class="goal-progress-bar" style="width: ${progress}%"></div></div>
                     <div class="goal-percent">${progress.toFixed(0)}% · ${goal.current.toFixed(0)}€ / ${goal.target.toFixed(0)}€</div>
                 </div>
@@ -226,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
-    function addMessage(role, content) {
+    function addMessage(role, content, saveToHistory = true) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${role}`;
         messageDiv.innerHTML = `
@@ -236,20 +241,52 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         elements.messagesContainer.appendChild(messageDiv);
         elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
+        
+        // 保存到聊天历史
+        if (saveToHistory && state.selectedGoalId) {
+            if (!state.chatHistory[state.selectedGoalId]) {
+                state.chatHistory[state.selectedGoalId] = [];
+            }
+            state.chatHistory[state.selectedGoalId].push({
+                role: role,
+                content: content,
+                timestamp: new Date().toISOString()
+            });
+            
+            // 保存到本地存储
+            saveChatHistoryToStorage();
+        }
+        
         return messageDiv; 
+    }
+
+    function restoreChatHistory(goalId) {
+        // 清空当前聊天界面
+        elements.messagesContainer.innerHTML = '';
+        
+        // 如果有聊天历史，恢复它
+        if (state.chatHistory[goalId] && state.chatHistory[goalId].length > 0) {
+            state.chatHistory[goalId].forEach(message => {
+                addMessage(message.role, message.content, false); // 不重复保存到历史
+            });
+        } else {
+            // 如果没有聊天历史，显示目标详情
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                showGoalDetails(goal).catch(error => {
+                    console.error('Error showing goal details:', error);
+                });
+            }
+        }
     }
 
     // --- UI & EVENT HANDLERS ---
     function selectGoal(goalId) {
         state.selectedGoalId = goalId;
         renderGoals(); // Re-render to update the 'selected' class
-        elements.messagesContainer.innerHTML = '';
-        const goal = state.goals.find(g => g.id === goalId);
-        if (goal) {
-            showGoalDetails(goal).catch(error => {
-                console.error('Error showing goal details:', error);
-            });
-        }
+        
+        // 恢复聊天历史
+        restoreChatHistory(goalId);
     }
 
     async function handleSendMessage() {
@@ -389,9 +426,64 @@ document.addEventListener('DOMContentLoaded', () => {
             return getTaskSubtasks(goal.title);
         } else if (input.includes('motivación') || input.includes('motivar') || input.includes('ánimo')) {
             return getMotivationalMessage(goal);
+        } else if (input.includes('limpiar') || input.includes('borrar') || input.includes('clear')) {
+            clearChatHistory(goal.id);
+            return '✅ Chat history cleared for this goal.';
+        } else if (input.includes('limpiar todo') || input.includes('borrar todo') || input.includes('clear all')) {
+            clearChatHistory();
+            return '✅ All chat history cleared.';
         }
         
         return null; 
+    }
+
+    function clearChatHistory(goalId = null) {
+        if (goalId) {
+            // 清除特定目标的聊天历史
+            delete state.chatHistory[goalId];
+            if (state.selectedGoalId === goalId) {
+                // 如果清除的是当前选中的目标，显示目标详情
+                const goal = state.goals.find(g => g.id === goalId);
+                if (goal) {
+                    elements.messagesContainer.innerHTML = '';
+                    showGoalDetails(goal).catch(error => {
+                        console.error('Error showing goal details:', error);
+                    });
+                }
+            }
+        } else {
+            // 清除所有聊天历史
+            state.chatHistory = {};
+            elements.messagesContainer.innerHTML = '';
+            const goal = state.goals.find(g => g.id === state.selectedGoalId);
+            if (goal) {
+                showGoalDetails(goal).catch(error => {
+                    console.error('Error showing goal details:', error);
+                });
+            }
+        }
+        renderGoals(); // 重新渲染以更新聊天指示器
+        saveChatHistoryToStorage(); // 保存到本地存储
+    }
+
+    function saveChatHistoryToStorage() {
+        try {
+            localStorage.setItem('financialAssistant_chatHistory', JSON.stringify(state.chatHistory));
+        } catch (error) {
+            console.error('Error saving chat history to localStorage:', error);
+        }
+    }
+
+    function loadChatHistoryFromStorage() {
+        try {
+            const saved = localStorage.getItem('financialAssistant_chatHistory');
+            if (saved) {
+                state.chatHistory = JSON.parse(saved);
+            }
+        } catch (error) {
+            console.error('Error loading chat history from localStorage:', error);
+            state.chatHistory = {};
+        }
     }
 
     function showBreakdown(type) {
@@ -456,6 +548,9 @@ document.addEventListener('DOMContentLoaded', () => {
     async function initialize() {
         console.log('Initializing Financial Assistant...');
         elements.openBtn.classList.add('show');
+        
+        // 加载聊天历史
+        loadChatHistoryFromStorage();
         
         try {
             console.log('Loading financial data...');

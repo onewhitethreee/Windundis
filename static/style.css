@@ -348,3 +348,21 @@ body {
     margin-top: 10px;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
+
+/* 聊天指示器样式 */
+.chat-indicator {
+    font-size: 10px;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: 600;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.goal-card.selected .chat-indicator {
+    background: rgba(102, 126, 234, 0.2);
+    color: #4c51bf;
+    border-color: rgba(102, 126, 234, 0.3);
+}
