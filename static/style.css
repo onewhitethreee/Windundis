@@ -1,28 +1,19 @@
-/* ==========================================================================
-   1. 设计规范 (Design Tokens) & 全局设置
-   ========================================================================== */
 
 :root {
 
-   
-
-    /* 字体 */
     --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hirazuka Sans GB', 'Microsoft YaHei', sans-serif;
     --font-family-code: 'Courier New', monospace;
 
-    /* 尺寸与间距 (Spacing & Sizing) */
     --spacing-unit: 8px;
     --border-radius-sm: 8px;
     --border-radius-md: 12px;
     --border-radius-lg: 16px;
-    --border-radius-pill: 50px; /* 用于胶囊按钮 */
+    --border-radius-pill: 50px;
 
-    /* 阴影 (Shadows) */
     --shadow-base: 0 4px 16px rgba(0, 168, 255, 0.1);
     --shadow-hover: 0 8px 24px rgba(0, 168, 255, 0.3);
     --shadow-inset: inset 0 2px 4px rgba(0, 168, 255, 0.1);
     
-    /* 过渡效果 */
     --transition-base: all 0.3s ease-out;
 }
 
@@ -46,20 +37,12 @@ body {
     padding: calc(var(--spacing-unit) * 2);
 }
 
-/* ==========================================================================
-   2. 布局容器 (Layout Containers)
-   ========================================================================== */
 
 .page-container {
     width: 100%;
     max-width: 500px;
 }
 
-/* ==========================================================================
-   3. 通用组件 (Reusable Components)
-   ========================================================================== */
-
-/* ------------------- Card 卡片 ------------------- */
 .card {
     background: var(--color-surface-base);
     border-radius: var(--border-radius-lg);
@@ -89,7 +72,6 @@ body {
     font-weight: 600;
 }
 
-/* ------------------- Button 按钮 ------------------- */
 .btn {
     padding: 14px 40px;
     border: none;
@@ -139,7 +121,6 @@ body {
     border-color: transparent;
 }
 
-/* ------------------- Form 表单 ------------------- */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -189,7 +170,6 @@ body {
     flex-wrap: wrap;
 }
 
-/* ------------------- Indicators 指示器 ------------------- */
 .spinner {
     width: 40px;
     height: 40px;
@@ -216,11 +196,7 @@ body {
 }
 
 
-/* ==========================================================================
-   4. 特定页面/模块样式 (Page/Module Specific Styles)
-   ========================================================================== */
 
-/* ------------------- 登录模块 ------------------- */
 .login-header {
     margin-bottom: calc(var(--spacing-unit) * 4);
 }
@@ -235,7 +211,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* ------------------- 信息展示模块 ------------------- */
 .info-section {
     margin: calc(var(--spacing-unit) * 3) 0;
 }
@@ -265,7 +240,6 @@ body {
     box-shadow: 0 4px 16px rgba(255, 0, 0, 0.1);
 }
 
-/* ------------------- SCA 授权模块 ------------------- */
 .sca-section {
     margin: calc(var(--spacing-unit) * 3) 0;
     text-align: center;
@@ -283,9 +257,6 @@ body {
     margin-bottom: calc(var(--spacing-unit) * 2);
 }
 
-/* ==========================================================================
-   5. 动画效果 (Animations)
-   ========================================================================== */
 @keyframes slideUp {
     from {
         opacity: 0;
@@ -314,9 +285,6 @@ body {
     75% { transform: translateX(5px); }
 }
 
-/* ==========================================================================
-   6. 响应式设计 (Responsive Design)
-   ========================================================================== */
 @media (max-width: 768px) {
     .form-row {
         flex-direction: column;
@@ -351,10 +319,6 @@ body {
         min-width: 180px;
     }
 }
-
-/* ==========================================================================
-   7. 图表样式 (Chart Styles)
-   ========================================================================== */
 
 .charts-section {
     margin: calc(var(--spacing-unit) * 3) 0;
@@ -395,7 +359,6 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 响应式图表 */
 @media (max-width: 768px) {
     .charts-grid {
         grid-template-columns: 1fr;

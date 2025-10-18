@@ -5,24 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Windundis - Login</title>
-    <!-- 确保这里的 style.css 指向你重构后的新 CSS 文件 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <!-- 使用新的布局容器类 -->
     <div class="page-container">
-        <!-- 使用 .card 作为主容器，并为其添加一个ID以便JS精准定位 -->
         <div id="app-card" class="card">
             <div class="login-header">
-                <!-- 为图标添加 .icon 类 -->
                 <i class="fas fa-university icon"></i>
                 <h1>Windundis</h1>
                 <p>Servicios de API Bancaria</p>
             </div>
 
-            <!-- 使用新的按钮组件类 -->
             <button id="loginBtn" class="btn btn--primary">
                 <i class="fas fa-sign-in-alt"></i>
                 Iniciar Sesión
@@ -31,17 +26,15 @@
     </div>
 
     <script>
-        // 目标主容器
         const appCard = document.getElementById('app-card');
 
-        // 检查URL参数，看是否包含code（重定向返回）
         function checkForCodeInURL() {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const state = urlParams.get('state');
 
             if (code) {
-                console.log('检测到重定向返回，code:', code);
+                console.log('Detectado redirección, code:', code);
                 console.log('state:', state);
 
                 showProcessingState();
@@ -49,50 +42,41 @@
             }
         }
 
-        // 显示处理状态
         function showProcessingState() {
             appCard.innerHTML = `
                 <div class="login-header">
-                    <!-- 为图标添加 .icon 类 -->
                     <i class="fas fa-cog fa-spin icon"></i>
-                    <h1>Procesando</h1>
+                    <h1>Procesando...</h1>
                     <p>Obteniendo token de acceso...</p>
                 </div>
                 <div class="spinner"></div>
             `;
         }
 
-        // 显示成功状态
         function showSuccessState(tokenData) {
             appCard.innerHTML = `
                 <div class="login-header">
-                    <!-- 使用新的图标类，移除内联样式 -->
                     <i class="fas fa-check-circle icon icon--success"></i>
                     <h1>¡Éxito!</h1>
                     <p>Token obtenido correctamente</p>
                 </div>
-                <!-- 使用新的 info-section 组件 -->
                 <div class="info-section">
                     <h3 class="info-section__title">Información del Token:</h3>
-                    <!-- 使用新的 card__details 组件 -->
                     <div class="card__details">
                         <p><strong>Access Token:</strong></p>
-                        <!-- 使用新的 info-section__textarea 类 -->
                         <textarea readonly class="info-section__textarea">${tokenData.access_token || 'N/A'}</textarea>
                         <p><strong>Token Type:</strong> ${tokenData.token_type || 'N/A'}</p>
                         <p><strong>Expires In:</strong> ${tokenData.expires_in || 'N/A'} segundos</p>
                     </div>
                 </div>
-                <!-- 同样使用 info-section 组件 -->
                 <div class="info-section">
                     <h3 class="info-section__title">Prueba de Pago</h3>
-                    <p>Configura los parámetros del pago o usa los valores por defecto:</p>
+                    <p>Configura los parámetros del pago o usa los valores por defecto.</p>
                     
                     <form class="payment-form">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="amount">Cantidad (EUR):</label>
-                                <!-- 为所有输入框添加 .form-control 类 -->
                                 <input type="number" id="amount" name="amount" value="500.00" step="0.01" min="0.01" max="999999.99" class="form-control" required>
                             </div>
                             <div class="form-group">
@@ -146,12 +130,10 @@
                         </div>
                         
                         <div class="form-actions">
-                             <!-- 使用新的 btn--secondary 类 -->
                             <button type="button" id="useDefaultBtn" class="btn btn--secondary">
                                 <i class="fas fa-undo"></i>
                                 Usar Valores por Defecto
                             </button>
-                             <!-- 使用新的 btn--primary 类 -->
                             <button type="button" id="paymentBtn" class="btn btn--primary">
                                 <i class="fas fa-credit-card"></i>
                                 Crear Pago de Prueba
@@ -159,7 +141,6 @@
                         </div>
                     </form>
                 </div>
-                <!-- 使用新的 btn--primary 类 -->
                 <button onclick="location.reload()" class="btn btn--primary">
                     <i class="fas fa-redo"></i>
                     Volver a Iniciar
@@ -178,22 +159,18 @@
             });
         }
 
-        // 显示错误状态
         function showErrorState(error) {
             appCard.innerHTML = `
                 <div class="login-header">
-                    <!-- 使用新的图标类，移除内联样式 -->
                     <i class="fas fa-exclamation-triangle icon icon--error"></i>
                     <h1>Error</h1>
                     <p>No se pudo obtener el token</p>
                 </div>
-                <!-- 使用 info-section 和 card__details 并添加错误修饰符 -->
                 <div class="info-section info-section--error">
                     <div class="card__details">
                         <p><strong>Error:</strong> ${error}</p>
                     </div>
                 </div>
-                <!-- 使用新的按钮类 -->
                 <button onclick="location.reload()" class="btn btn--primary">
                     <i class="fas fa-redo"></i>
                     Intentar de Nuevo
@@ -201,7 +178,6 @@
             `;
         }
 
-        // 显示支付创建成功状态
         function showPaymentCreatedState(paymentData, accessToken) {
             appCard.innerHTML = `
                 <div class="login-header">
@@ -220,14 +196,12 @@
                 <div class="sca-section">
                     <h3>Autorización Requerida</h3>
                     <p>El pago requiere autorización del usuario. Haz clic en el botón para continuar:</p>
-                    <!-- 使用新的按钮类 -->
                     <button id="scaBtn" class="btn btn--primary">
                         <i class="fas fa-shield-alt"></i>
                         Autorizar Pago
                     </button>
                 </div>
                 <div class="status-section">
-                    <!-- 使用新的按钮类 -->
                     <button id="statusBtn" class="btn btn--secondary">
                         <i class="fas fa-info-circle"></i>
                         Verificar Estado
@@ -253,7 +227,6 @@
             });
         }
 
-        // 显示支付状态
         function showPaymentStatusState(statusData, accessToken, paymentId) {
             appCard.innerHTML = `
                 <div class="login-header">
@@ -290,7 +263,6 @@
             });
         }
 
-        // 显示支付错误状态
         function showPaymentErrorState(error) {
             appCard.innerHTML = `
                 <div class="login-header">
@@ -310,7 +282,6 @@
             `;
         }
 
-        // 保持其他JS函数不变...
         function getPaymentFormData() {
             const amount = document.getElementById('amount').value;
             const debtorIban = document.getElementById('debtorIban').value;
@@ -424,7 +395,6 @@
         }
 
         function analyzeFinancialData(accessToken) {
-            // Mostrar estado de procesamiento
             appCard.innerHTML = `
                 <div class="login-header">
                     <i class="fas fa-spinner fa-spin icon"></i>
@@ -433,7 +403,6 @@
                 </div>
             `;
 
-            // Datos de ejemplo para el análisis (en un caso real, estos vendrían de la API bancaria)
             const sampleBankData = {
                 "account": {"iban": "ES6200810602620003333338", "currency": "EUR"},
                 "transactions": {"booked": [
@@ -552,7 +521,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             checkForCodeInURL();
             const loginBtn = document.getElementById('loginBtn');
-            // 只有当登录按钮存在时（即没有code参数重定向）才添加事件监听
             if (loginBtn) {
                 loginBtn.addEventListener('click', function () {
                     this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
@@ -561,8 +529,6 @@
                     fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, redirect: 'manual' })
                         .then(response => {
                             if (response.type === 'opaqueredirect') {
-                                // 在 opaqueridrect 类型下，我们无法直接获取 Location 头，但可以假定重定向正在发生
-                                // 浏览器会自动处理，我们不需要做任何事情
                                 return;
                             }
                             if (response.status === 200) {

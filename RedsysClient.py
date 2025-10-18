@@ -2,7 +2,7 @@ import requests
 import os
 import uuid
 from urllib.parse import urlparse, parse_qs
-from dotenv import load_dotenv # 导入 load_dotenv
+from dotenv import load_dotenv 
 
 class RedsysClient:
     """
@@ -91,15 +91,8 @@ class RedsysClient:
             return None
 
     def get_access_token(self, code):
-        """
-        使用authorization code获取access token
-        Args:
-            code (str): 从重定向URL中提取的authorization code
-        Returns:
-            dict: API响应结果，包含access token等信息
-        """
+
         try:
-            # 准备请求数据
             payload = {
                 'grant_type': 'authorization_code',
                 'client_id': self._get_env_variable('CLIENT_ID'),
@@ -107,19 +100,15 @@ class RedsysClient:
                 'redirect_uri': self._get_env_variable('REDIRECT_URI'),
                 'code_verifier': self._get_env_variable('CODE_VERIFIER')
             }
-            # print(payload)
-            # 设置请求头
+
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
             
-            # 发送POST请求
             response = requests.post(self.token_url, headers=headers, data=payload)
             
-            # 检查响应状态
             response.raise_for_status()
             
-            # 返回JSON响应
             return {
                 'success': True,
                 'data': response.json(),
@@ -127,43 +116,34 @@ class RedsysClient:
             }
             
         except requests.exceptions.HTTPError as e:
-            print(f"HTTP错误: {e}")
-            print(f"响应内容: {e.response.text}")
+            print(f"Error HTTP: {e}")
+            print(f"Contenido de respuesta: {e.response.text}")
             return {
                 'success': False,
-                'error': f"HTTP错误: {e}",
+                'error': f"Error HTTP: {e}",
                 'status_code': e.response.status_code,
                 'response_text': e.response.text
             }
         except requests.exceptions.RequestException as e:
-            print(f"请求错误: {e}")
+            print(f"Error de solicitud: {e}")
             return {
                 'success': False,
-                'error': f"请求错误: {e}"
+                'error': f"Error de solicitud: {e}"
             }
         except Exception as e:
-            print(f"未知错误: {e}")
+            print(f"Error desconocido: {e}")
             return {
                 'success': False,
-                'error': f"未知错误: {e}"
+                'error': f"Error desconocido: {e}"
             }
 
     def create_payment_request(self, access_token, payment_data=None):
-        """
-        创建支付请求，需要用户同意
-        Args:
-            access_token (str): 访问令牌
-            payment_data (dict): 支付数据，如果为None则使用默认测试数据
-        Returns:
-            dict: API响应结果，包含支付ID和用户同意URL
-        """
+
         try:
             payment_url = "https://apis-i.redsys.es:20443/psd2/xs2a/api-entrada-xs2a/services/BancSabadell/v1.1/payments/sepa-credit-transfers"
             
-            # 生成唯一的请求ID
             request_id = str(uuid.uuid4())
             
-            # 设置请求头
             headers = {
                 'X-Request-ID': request_id,
                 'Content-Type': 'application/json',
@@ -176,10 +156,8 @@ class RedsysClient:
                 'Cookie': 'JSESSIONPSD2SANDBOX=000057hCGTTrfuLsCui-hO0-aYL:54f4f83818ad2e530218696453cc5c86'
             }
             
-            # 发送POST请求
             response = requests.post(payment_url, headers=headers, json=payment_data)
             
-            # 检查响应状态
             response.raise_for_status()
             
             response_data = response.json()
@@ -191,44 +169,34 @@ class RedsysClient:
             }
             
         except requests.exceptions.HTTPError as e:
-            print(f"支付请求HTTP错误: {e}")
-            print(f"响应内容: {e.response.text}")
+            print(f"Error HTTP: {e}")
+            print(f"Contenido de respuesta: {e.response.text}")
             return {
                 'success': False,
-                'error': f"支付请求HTTP错误: {e}",
+                'error': f"Error HTTP: {e}",
                 'status_code': e.response.status_code,
                 'response_text': e.response.text
             }
         except requests.exceptions.RequestException as e:
-            print(f"支付请求错误: {e}")
+            print(f"Error de solicitud: {e}")
             return {
                 'success': False,
-                'error': f"支付请求错误: {e}"
+                'error': f"Error de solicitud: {e}"
             }
         except Exception as e:
-            print(f"支付请求未知错误: {e}")
+            print(f"Error desconocido: {e}")
             return {
                 'success': False,
-                'error': f"支付请求未知错误: {e}"
+                'error': f"Error desconocido: {e}"
             }
 
     def check_payment_status(self, access_token, payment_id):
-        """
-        检查支付状态
-        Args:
-            access_token (str): 访问令牌
-            payment_id (str): 支付ID
-        Returns:
-            dict: API响应结果，包含支付状态
-        """
+
         try:
-            # 支付状态查询URL
             status_url = f"https://apis-i.redsys.es:20443/psd2/xs2a/api-entrada-xs2a/services/BancSabadell/v1.1/payments/sepa-credit-transfers/{payment_id}/status"
             
-            # 生成唯一的请求ID
             request_id = str(uuid.uuid4())
             
-            # 设置请求头
             headers = {
                 'X-Request-ID': request_id,
                 'Authorization': f'Bearer {access_token}',
@@ -238,13 +206,10 @@ class RedsysClient:
                 'PSU-IP-Address': '192.168.1.1'
             }
             
-            # 发送GET请求
             response = requests.get(status_url, headers=headers)
             
-            # 检查响应状态
             response.raise_for_status()
             
-            # 返回JSON响应
             response_data = response.json()
             return {
                 'success': True,
@@ -253,25 +218,25 @@ class RedsysClient:
             }
             
         except requests.exceptions.HTTPError as e:
-            print(f"支付状态查询HTTP错误: {e}")
-            print(f"响应内容: {e.response.text}")
+            print(f"Error HTTP: {e}")
+            print(f"Contenido de respuesta: {e.response.text}")
             return {
                 'success': False,
-                'error': f"支付状态查询HTTP错误: {e}",
+                'error': f"Error HTTP: {e}",
                 'status_code': e.response.status_code,
                 'response_text': e.response.text
             }
         except requests.exceptions.RequestException as e:
-            print(f"支付状态查询错误: {e}")
+            print(f"Error de solicitud: {e}")
             return {
                 'success': False,
-                'error': f"支付状态查询错误: {e}"
+                'error': f"Error de solicitud: {e}"
             }
         except Exception as e:
-            print(f"支付状态查询未知错误: {e}")
+            print(f"Error desconocido: {e}")
             return {
                 'success': False,
-                'error': f"支付状态查询未知错误: {e}"
+                'error': f"Error desconocido: {e}"
             }
 
 if __name__ == "__main__":
