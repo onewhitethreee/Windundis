@@ -62,6 +62,133 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    async function getAIResponse(userInput, goal) {
+        try {
+            const requestData = {
+                question: userInput,
+                goal: goal ? {
+                    title: goal.title,
+                    description: goal.description,
+                    current: goal.current,
+                    target: goal.target
+                } : null
+            };
+
+            console.log('Sending AI request:', requestData);
+
+            const response = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('AI response:', result);
+            
+            if (result.success) {
+                return result.data.response;
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+        } catch (error) {
+            console.error('Error calling AI API:', error);
+            if (goal) {
+                return `Sobre tu meta "${goal.title}": ${goal.description}. Tu estrategia es: ${goal.strategy}. ¿Necesitas más detalles?`;
+            } else {
+                return 'Selecciona una meta en la izquierda para obtener recomendaciones personalizadas.';
+            }
+        }
+    }
+
+    async function getMotivationalMessage(goal) {
+        try {
+            const progress = (goal.current / goal.target) * 100;
+            const requestData = {
+                progress: progress,
+                title: goal.title
+            };
+
+            const response = await fetch('/api/ai/motivation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                return result.data.motivation;
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+        } catch (error) {
+            console.error('Error getting motivation:', error);
+            const progress = (goal.current / goal.target) * 100;
+            if (progress >= 100) {
+                return `🎉 ¡Felicidades! Has completado tu meta "${goal.title}". ¡Eres increíble!`;
+            } else if (progress >= 75) {
+                return `💪 ¡Estás muy cerca! Has completado el ${progress.toFixed(0)}% de "${goal.title}". ¡Solo un poco más!`;
+            } else if (progress >= 50) {
+                return `🚀 ¡Excelente progreso! Has completado el ${progress.toFixed(0)}% de "${goal.title}". ¡Sigue así!`;
+            } else {
+                return `🌟 ¡Buen comienzo! Has completado el ${progress.toFixed(0)}% de "${goal.title}". ¡Cada paso cuenta!`;
+            }
+        }
+    }
+
+    async function getTaskSubtasks(task) {
+        try {
+            const requestData = {
+                task: task
+            };
+
+            const response = await fetch('/api/ai/subtasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                return result.data.subtasks;
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+        } catch (error) {
+            console.error('Error getting subtasks:', error);
+            return `
+                <div style="color: var(--color-text-primary); line-height: 1.6;">
+                    <strong>📋 Plan para "${task}":</strong><br><br>
+                    1. <strong>Definir presupuesto:</strong> Establece cuánto necesitas ahorrar<br>
+                    2. <strong>Crear timeline:</strong> Define fechas límite realistas<br>
+                    3. <strong>Automatizar ahorros:</strong> Configura transferencias automáticas<br>
+                    4. <strong>Monitorear progreso:</strong> Revisa semanalmente tu avance<br>
+                    5. <strong>Ajustar estrategia:</strong> Modifica el plan según sea necesario<br><br>
+                    <em>💡 Consejo: Empieza con pasos pequeños y celebra cada logro.</em>
+                </div>
+            `;
+        }
+    }
+
     function generateGoals(data) {
         const { analysis } = data;
         const monthlyIncome = analysis.total_income;
@@ -109,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         elements.messagesContainer.appendChild(messageDiv);
         elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
+        return messageDiv; 
     }
 
     // --- UI & EVENT HANDLERS ---
@@ -118,11 +246,13 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.messagesContainer.innerHTML = '';
         const goal = state.goals.find(g => g.id === goalId);
         if (goal) {
-            showGoalDetails(goal);
+            showGoalDetails(goal).catch(error => {
+                console.error('Error showing goal details:', error);
+            });
         }
     }
 
-    function handleSendMessage() {
+    async function handleSendMessage() {
         const userInput = elements.inputField.value.trim();
         if (!userInput) return;
 
@@ -130,22 +260,40 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.inputField.value = '';
         elements.sendBtn.disabled = true;
 
-        setTimeout(() => {
-            let response = 'Selecciona una meta en la izquierda para obtener recomendaciones personalizadas.';
+        const loadingMessage = addMessage('assistant', '<div class="loading-dots"><span></span><span></span><span></span> Procesando...</div>');
+
+        try {
+            let response;
             if (state.selectedGoalId) {
                 const goal = state.goals.find(g => g.id === state.selectedGoalId);
-                response = getGoalResponse(userInput, goal);
+                
+                const specialResponse = handleSpecialCommands(userInput, goal);
+                if (specialResponse) {
+                    response = await specialResponse;
+                } else {
+                    response = await getAIResponse(userInput, goal);
+                }
+            } else {
+                response = await getAIResponse(userInput, null);
             }
+            
+            loadingMessage.remove();
             addMessage('assistant', response);
+        } catch (error) {
+            console.error('Error getting AI response:', error);
+            loadingMessage.remove();
+            addMessage('assistant', 'Lo siento, no pude procesar tu consulta en este momento. Por favor, inténtalo de nuevo.');
+        } finally {
             elements.sendBtn.disabled = false;
             elements.inputField.focus();
-        }, 500);
+        }
     }
 
-    function showGoalDetails(goal) {
+    async function showGoalDetails(goal) {
         const remaining = goal.target - goal.current;
         const progress = (goal.current / goal.target) * 100;
-        const message = `
+        
+        const basicInfo = `
             <div style="color: var(--color-text-primary); line-height: 1.8;">
                 <strong>🎯 ${goal.title}</strong><br>
                 <span style="font-size: 12px; color: var(--color-text-light);">Prioridad: ${goal.priority === 'high' ? '🔴 Alta' : '🟡 Media'}</span><br><br>
@@ -157,7 +305,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong>💡 Estrategia:</strong><br>${goal.strategy}
             </div>
         `;
-        addMessage('assistant', message);
+        addMessage('assistant', basicInfo);
+
+        try {
+            const motivation = await getMotivationalMessage(goal);
+            addMessage('assistant', `
+                <div style="color: var(--color-text-primary); line-height: 1.6; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 12px; margin-top: 10px;">
+                    <strong>💪 Mensaje Motivacional:</strong><br><br>
+                    ${motivation}
+                </div>
+            `);
+        } catch (error) {
+            console.error('Error getting motivation:', error);
+        }
     }
 
     function openCopilot() {
@@ -222,17 +382,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return div.innerHTML;
     }
 
-    function getGoalResponse(userInput, goal) {
+    function handleSpecialCommands(userInput, goal) {
         const input = userInput.toLowerCase();
-        // Simplified response logic from the original code
-        if (input.includes('cómo') || input.includes('estrategia')) {
-            return `Para lograr "${goal.title}": ${goal.strategy}.`;
-        } else if (input.includes('cuánto') || input.includes('falta')) {
-            const remaining = goal.target - goal.current;
-            return `Te falta ${remaining.toFixed(2)}€ para completar "${goal.title}". ¡Sigue así!`;
-        } else {
-            return `Sobre "${goal.title}": ${goal.description}. Tu estrategia es: ${goal.strategy}. ¿Necesitas más detalles?`;
+        
+        if (input.includes('dividir') || input.includes('subtareas') || input.includes('pasos')) {
+            return getTaskSubtasks(goal.title);
+        } else if (input.includes('motivación') || input.includes('motivar') || input.includes('ánimo')) {
+            return getMotivationalMessage(goal);
         }
+        
+        return null; 
     }
 
     function showBreakdown(type) {
@@ -295,10 +454,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function initialize() {
+        console.log('Initializing Financial Assistant...');
         elements.openBtn.classList.add('show');
+        
         try {
+            console.log('Loading financial data...');
             const data = await loadFinancialData();
             state.goals = generateGoals(data);
+            console.log('Goals generated:', state.goals.length);
 
             elements.incomeStat.textContent = `+${data.analysis.total_income.toFixed(2)}€`;
             elements.expensesStat.textContent = `−${data.analysis.total_expenses.toFixed(2)}€`;
@@ -316,8 +479,13 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.inputField.disabled = false;
             elements.sendBtn.disabled = false;
 
-            selectGoal(1); // Select the first goal by default
+            console.log('Binding event listeners...');
             bindEventListeners();
+            
+            console.log('Selecting first goal...');
+            selectGoal(1); // Select the first goal by default
+            
+            console.log('Initialization complete!');
 
         } catch (error) {
             console.error('Initialization Error:', error);

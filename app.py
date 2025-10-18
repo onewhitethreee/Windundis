@@ -4,12 +4,14 @@ import json
 from flask_cors import CORS
 import sys
 import os
+from datetime import datetime
 os.environ['MPLCONFIGDIR'] = os.path.join(os.path.expanduser('~'), '.config', 'matplotlib')
 os.makedirs(os.environ['MPLCONFIGDIR'], exist_ok=True)
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from RedsysClient import RedsysClient
 from model.ALIA40b import analyze_with_charts
+from ai_service import ai_service
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -204,6 +206,156 @@ def analyze_financial_data():
         
     except Exception as e:
         return jsonify({"success": False, "error": f"Error en análisis: {str(e)}"}), 500
+
+@app.route('/api/ai/chat', methods=['POST', 'OPTIONS'])
+def ai_chat():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "Datos de entrada requeridos"}), 400
+        
+        user_question = data.get('question', '')
+        goal_data = data.get('goal', {})
+        
+        if not user_question:
+            return jsonify({"success": False, "error": "Pregunta requerida"}), 400
+        
+        if goal_data:
+            advice = ai_service.get_goal_advice(
+                goal_title=goal_data.get('title', ''),
+                goal_description=goal_data.get('description', ''),
+                current_amount=goal_data.get('current', 0),
+                target_amount=goal_data.get('target', 0),
+                user_question=user_question
+            )
+        else:
+            advice = ai_service.get_goal_advice(
+                goal_title="Consulta General",
+                goal_description="Consulta general sobre finanzas",
+                current_amount=0,
+                target_amount=0,
+                user_question=user_question
+            )
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "response": advice,
+                "timestamp": str(datetime.now())
+            },
+            "message": "Respuesta AI generada exitosamente"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error en chat AI: {str(e)}"}), 500
+
+@app.route('/api/ai/analyze-habits', methods=['POST', 'OPTIONS'])
+def analyze_financial_habits():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data or 'transactions' not in data:
+            return jsonify({"success": False, "error": "Datos de transacciones requeridos"}), 400
+        
+        transactions_data = data['transactions']
+        analysis = ai_service.analyze_financial_habits(transactions_data)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "analysis": analysis,
+                "timestamp": str(datetime.now())
+            },
+            "message": "Análisis de hábitos completado"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error en análisis de hábitos: {str(e)}"}), 500
+
+@app.route('/api/ai/savings-plan', methods=['POST', 'OPTIONS'])
+def create_savings_plan():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "Datos requeridos"}), 400
+        
+        income = data.get('income', 0)
+        expenses = data.get('expenses', 0)
+        goals = data.get('goals', [])
+        
+        savings_plan = ai_service.create_savings_plan(income, expenses, goals)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "savings_plan": savings_plan,
+                "timestamp": str(datetime.now())
+            },
+            "message": "Plan de ahorro creado exitosamente"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error creando plan de ahorro: {str(e)}"}), 500
+
+@app.route('/api/ai/motivation', methods=['POST', 'OPTIONS'])
+def get_motivation():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "Datos requeridos"}), 400
+        
+        goal_progress = data.get('progress', 0)
+        goal_title = data.get('title', 'Tu meta')
+        
+        motivation = ai_service.get_motivational_message(goal_progress, goal_title)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "motivation": motivation,
+                "timestamp": str(datetime.now())
+            },
+            "message": "Mensaje motivacional generado"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error generando motivación: {str(e)}"}), 500
+
+@app.route('/api/ai/subtasks', methods=['POST', 'OPTIONS'])
+def divide_task():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data or 'task' not in data:
+            return jsonify({"success": False, "error": "Tarea requerida"}), 400
+        
+        task = data['task']
+        subtasks = ai_service.divide_task_into_subtasks(task)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "subtasks": subtasks,
+                "timestamp": str(datetime.now())
+            },
+            "message": "Subtareas generadas exitosamente"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error dividiendo tarea: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080) 
