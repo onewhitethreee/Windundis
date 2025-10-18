@@ -529,6 +529,8 @@
                     fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, redirect: 'manual' })
                         .then(response => {
                             if (response.type === 'opaqueredirect') {
+                                // 在 opaqueridrect 类型下，我们无法直接获取 Location 头，但可以假定重定向正在发生
+                                // 浏览器会自动处理，我们不需要做任何事情
                                 return;
                             }
                             if (response.status === 200) {

@@ -59,18 +59,12 @@ class RedsysClient:
         Envía la solicitud de autorización y devuelve la URL de redirección final.
         """
         try:
-            response = requests.get(self.base_url, params=self.request_params)
+            response = requests.get(self.base_url, params=self.request_params, verify=False)
 
             response.raise_for_status() 
 
             return response.url
-        except requests.exceptions.HTTPError as e:
-            print(f"URL de respuesta: {e.response.url}") # Se puede imprimir la URL donde ocurrió el error
-            print(f"Contenido de respuesta: {e.response.text}")
-            return None
-        except requests.exceptions.RequestException as e:
-            print(f"Error de solicitud: {e}")
-            return None
+        
         except Exception as e:
             print(f"Error desconocido: {e}")
             return None
@@ -105,7 +99,7 @@ class RedsysClient:
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
             
-            response = requests.post(self.token_url, headers=headers, data=payload)
+            response = requests.post(self.token_url, headers=headers, data=payload, verify=False)
             
             response.raise_for_status()
             
@@ -115,21 +109,7 @@ class RedsysClient:
                 'status_code': response.status_code
             }
             
-        except requests.exceptions.HTTPError as e:
-            print(f"Error HTTP: {e}")
-            print(f"Contenido de respuesta: {e.response.text}")
-            return {
-                'success': False,
-                'error': f"Error HTTP: {e}",
-                'status_code': e.response.status_code,
-                'response_text': e.response.text
-            }
-        except requests.exceptions.RequestException as e:
-            print(f"Error de solicitud: {e}")
-            return {
-                'success': False,
-                'error': f"Error de solicitud: {e}"
-            }
+        
         except Exception as e:
             print(f"Error desconocido: {e}")
             return {
@@ -156,7 +136,7 @@ class RedsysClient:
                 'Cookie': 'JSESSIONPSD2SANDBOX=000057hCGTTrfuLsCui-hO0-aYL:54f4f83818ad2e530218696453cc5c86'
             }
             
-            response = requests.post(payment_url, headers=headers, json=payment_data)
+            response = requests.post(payment_url, headers=headers, json=payment_data, verify=False)
             
             response.raise_for_status()
             
@@ -168,21 +148,7 @@ class RedsysClient:
                 'request_id': request_id
             }
             
-        except requests.exceptions.HTTPError as e:
-            print(f"Error HTTP: {e}")
-            print(f"Contenido de respuesta: {e.response.text}")
-            return {
-                'success': False,
-                'error': f"Error HTTP: {e}",
-                'status_code': e.response.status_code,
-                'response_text': e.response.text
-            }
-        except requests.exceptions.RequestException as e:
-            print(f"Error de solicitud: {e}")
-            return {
-                'success': False,
-                'error': f"Error de solicitud: {e}"
-            }
+        
         except Exception as e:
             print(f"Error desconocido: {e}")
             return {
@@ -206,7 +172,7 @@ class RedsysClient:
                 'PSU-IP-Address': '192.168.1.1'
             }
             
-            response = requests.get(status_url, headers=headers)
+            response = requests.get(status_url, headers=headers, verify=False)
             
             response.raise_for_status()
             
@@ -217,21 +183,7 @@ class RedsysClient:
                 'status_code': response.status_code
             }
             
-        except requests.exceptions.HTTPError as e:
-            print(f"Error HTTP: {e}")
-            print(f"Contenido de respuesta: {e.response.text}")
-            return {
-                'success': False,
-                'error': f"Error HTTP: {e}",
-                'status_code': e.response.status_code,
-                'response_text': e.response.text
-            }
-        except requests.exceptions.RequestException as e:
-            print(f"Error de solicitud: {e}")
-            return {
-                'success': False,
-                'error': f"Error de solicitud: {e}"
-            }
+        
         except Exception as e:
             print(f"Error desconocido: {e}")
             return {
