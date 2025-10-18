@@ -14,7 +14,6 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -42,13 +41,13 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0066CC;
             color: white;
             padding: 16px 24px;
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
             justify-content: space-between;
         }
 
@@ -113,7 +112,7 @@
             background: white;
             padding: 12px;
             border-radius: 8px;
-            border-left: 3px solid #667eea;
+            border-left: 3px solid #003366;
             transition: all 0.2s ease;
         }
 
@@ -133,7 +132,7 @@
         .stat-value {
             font-size: 18px;
             font-weight: 700;
-            color: #667eea;
+            color: #003366;
         }
 
         .stat-value.positive {
@@ -167,8 +166,8 @@
 
         .goal-card.selected {
             background: #edf2f7;
-            border-left-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            border-left-color: #003366;
+            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.2);
         }
 
         .goal-title {
@@ -255,7 +254,7 @@
         }
 
         .message.user .message-bubble {
-            background: #667eea;
+            background: #003366;
             color: white;
             border-bottom-right-radius: 4px;
         }
@@ -309,13 +308,13 @@
 
         .input-field:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #003366;
+            box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
         }
 
         .send-btn {
             padding: 10px 16px;
-            background: #667eea;
+            background: #003366;
             color: white;
             border: none;
             border-radius: 8px;
@@ -329,9 +328,9 @@
         }
 
         .send-btn:hover:not(:disabled) {
-            background: #5568d3;
+            background: #0066CC;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
         }
 
         .send-btn:disabled {
@@ -345,13 +344,13 @@
             right: 24px;
             width: 56px;
             height: 56px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #003366;
             border: none;
             border-radius: 50%;
             color: white;
             font-size: 24px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.4);
             transition: all 0.3s ease;
             display: none;
             align-items: center;
@@ -361,7 +360,7 @@
 
         .open-copilot-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 8px 20px rgba(0, 51, 102, 0.6);
         }
 
         .open-copilot-btn.show {
@@ -422,7 +421,7 @@
             width: 16px;
             height: 16px;
             border: 2px solid #e2e8f0;
-            border-top-color: #667eea;
+            border-top-color: #003366;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -455,12 +454,12 @@
                     <div class="stat-card" onclick="showIncomeBreakdown()">
                         <div class="stat-label">Ingresos</div>
                         <div class="stat-value positive" id="incomeStat">+0€</div>
-                        <div style="font-size: 10px; color: #667eea; margin-top: 4px; cursor: pointer;">Ver desglose</div>
+                        <div style="font-size: 10px; color: #003366; margin-top: 4px; cursor: pointer;">Ver desglose</div>
                     </div>
                     <div class="stat-card" onclick="showExpenseBreakdown()">
                         <div class="stat-label">Gastos</div>
                         <div class="stat-value negative" id="expensesStat">−0€</div>
-                        <div style="font-size: 10px; color: #667eea; margin-top: 4px; cursor: pointer;">Ver desglose</div>
+                        <div style="font-size: 10px; color: #003366; margin-top: 4px; cursor: pointer;">Ver desglose</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Balance</div>
@@ -802,7 +801,7 @@
                 <div style="color: #2d3748; line-height: 1.6;">
                     <strong>📊 Desglose de Ingresos</strong><br><br>
                     ${incomeHTML}
-                    <div style="padding: 8px 0; margin-top: 8px; font-weight: 700; color: #667eea;">
+                    <div style="padding: 8px 0; margin-top: 8px; font-weight: 700; color: #003366;">
                         Total: +${Object.values(categoryData.income).reduce((a, b) => a + b, 0).toFixed(2)}€
                     </div>
                 </div>
@@ -824,7 +823,7 @@
                     const subtotal = items.reduce((a, b) => a + b.amount, 0);
                     return `
                         <div style="margin-bottom: 12px; padding: 8px; background: #f7fafc; border-radius: 6px;">
-                            <strong style="color: #667eea;">${category}</strong><br>
+                            <strong style="color: #003366;">${category}</strong><br>
                             ${items.map(item => `<div style="padding: 4px 0; font-size: 12px;">• ${item.name}: −${item.amount.toFixed(2)}€</div>`).join('')}
                             <div style="border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px; font-weight: 600; color: #f56565;">Subtotal: −${subtotal.toFixed(2)}€</div>
                         </div>
