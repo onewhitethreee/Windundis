@@ -1,441 +1,85 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Assistant - Copilot</title>
+    <!-- 外部图标库 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            color: #2d3748;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 90vh;
-            max-height: 900px;
-            z-index: 1000;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .header {
-            background: #0066CC;
-            color: white;
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
-            justify-content: space-between;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-icon {
-            font-size: 24px;
-        }
-
-        .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .header-status {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        .content {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 300px;
-            padding: 20px;
-            background: #f7fafc;
-            border-right: 1px solid #e2e8f0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .sidebar-section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .sidebar-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #718096;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 3px solid #003366;
-            transition: all 0.2s ease;
-        }
-
-        .stat-card:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transform: translateX(2px);
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #718096;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #003366;
-        }
-
-        .stat-value.positive {
-            color: #48bb78;
-        }
-
-        .stat-value.negative {
-            color: #f56565;
-        }
-
-        .goals-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .goal-card {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 3px solid #48bb78;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .goal-card:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transform: translateX(2px);
-        }
-
-        .goal-card.selected {
-            background: #edf2f7;
-            border-left-color: #003366;
-            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.2);
-        }
-
-        .goal-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 6px;
-        }
-
-        .goal-progress {
-            width: 100%;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 4px;
-        }
-
-        .goal-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #48bb78, #38a169);
-            transition: width 0.3s ease;
-        }
-
-        .goal-percent {
-            font-size: 10px;
-            color: #a0aec0;
-        }
-
-        .chat-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .message {
-            display: flex;
-            gap: 8px;
-            animation: slideIn 0.3s ease;
-        }
-
-        .message.user {
-            justify-content: flex-end;
-        }
-
-        .message.assistant {
-            justify-content: flex-start;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message-bubble {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            line-height: 1.5;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-
-        .message.assistant .message-bubble {
-            background: #edf2f7;
-            color: #2d3748;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.user .message-bubble {
-            background: #003366;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message-icon {
-            font-size: 18px;
-            opacity: 0.7;
-            flex-shrink: 0;
-        }
-
-        .initial-message {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            color: #a0aec0;
-            padding: 40px 20px;
-        }
-
-        .initial-message-icon {
-            font-size: 48px;
-            color: #cbd5e0;
-            margin-bottom: 12px;
-        }
-
-        .input-area {
-            padding: 16px 20px;
-            border-top: 1px solid #e2e8f0;
-            background: white;
-            display: flex;
-            gap: 8px;
-        }
-
-        .input-wrapper {
-            flex: 1;
-            display: flex;
-            gap: 8px;
-        }
-
-        .input-field {
-            flex: 1;
-            padding: 10px 14px;
-            border: 1px solid #cbd5e0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.2s ease;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: #003366;
-            box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
-        }
-
-        .send-btn {
-            padding: 10px 16px;
-            background: #003366;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .send-btn:hover:not(:disabled) {
-            background: #0066CC;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .open-copilot-btn {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            background: #003366;
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.4);
-            transition: all 0.3s ease;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-        }
-
-        .open-copilot-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 20px rgba(0, 51, 102, 0.6);
-        }
-
-        .open-copilot-btn.show {
-            display: flex;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 997;
-            animation: fadeIn 0.2s ease;
-            backdrop-filter: blur(2px);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-overlay.show {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                width: 100%;
-                max-height: none;
-                height: 100vh;
-                border-radius: 0;
-            }
-
-            .sidebar {
-                width: 200px;
-            }
-
-            .message-bubble {
-                max-width: 85%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .sidebar {
-                display: none;
-            }
-
-            .message-bubble {
-                max-width: 95%;
-            }
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #e2e8f0;
-            border-top-color: #003366;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+    <!-- 链接外部CSS文件 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+    <!-- 遮罩层 -->
     <div class="modal-overlay" id="modalOverlay"></div>
 
-    <div class="container" id="container" style="display: none;">
-        <div class="header">
+    <!-- 创建新目标的模态框 -->
+    <div class="modal-overlay-container" id="createGoalModalContainer">
+        <div class="create-goal-modal">
+            <div class="modal-header">
+                <h3>Crear Nueva Meta</h3>
+                <button class="close-modal-btn" id="closeGoalModalBtn" aria-label="Cerrar modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="goalTitle">Título de la meta</label>
+                    <input type="text" id="goalTitle" placeholder="Ej: Fondo de emergencia" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="goalDescription">Descripción</label>
+                    <textarea id="goalDescription" placeholder="Describe tu meta..." rows="3"
+                        maxlength="200"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="goalTarget">Meta (€)</label>
+                        <input type="number" id="goalTarget" placeholder="0" min="1" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="goalCurrent">Ahorrado actual (€)</label>
+                        <input type="number" id="goalCurrent" placeholder="0" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="goalDeadline">Plazo</label>
+                        <select id="goalDeadline">
+                            <option value="1 mes">1 mes</option>
+                            <option value="3 meses">3 meses</option>
+                            <option value="6 meses" selected>6 meses</option>
+                            <option value="1 año">1 año</option>
+                            <option value="2 años">2 años</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="goalPriority">Prioridad</label>
+                        <select id="goalPriority">
+                            <option value="high">🔴 Alta</option>
+                            <option value="medium" selected>🟡 Media</option>
+                            <option value="low">🟢 Baja</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="goalStrategy">Estrategia</label>
+                    <textarea id="goalStrategy" placeholder="¿Cómo planeas alcanzar esta meta?" rows="2"
+                        maxlength="150"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" id="cancelGoalBtn">Cancelar</button>
+                <button class="create-btn" id="createGoalSubmitBtn">Crear Meta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="container" id="container">
+        <header class="header">
             <div class="header-left">
                 <div class="header-icon"><i class="fas fa-target"></i></div>
                 <div>
@@ -445,473 +89,64 @@
             <div class="header-actions">
                 <div class="header-status" id="headerStatus">Cargando...</div>
             </div>
-        </div>
+        </header>
 
-        <div class="content">
-            <div class="sidebar" id="sidebar">
-                <div class="sidebar-section">
-                    <div class="sidebar-title">Resumen Financiero</div>
-                    <div class="stat-card" onclick="showIncomeBreakdown()">
+        <main class="content">
+            <aside class="sidebar" id="sidebar">
+                <section class="sidebar-section">
+                    <h2 class="sidebar-title">Resumen Financiero</h2>
+                    <div class="stat-card" data-action="showIncome">
                         <div class="stat-label">Ingresos</div>
                         <div class="stat-value positive" id="incomeStat">+0€</div>
-                        <div style="font-size: 10px; color: #003366; margin-top: 4px; cursor: pointer;">Ver desglose</div>
+                        <div class="stat-action-link">Ver desglose</div>
                     </div>
-                    <div class="stat-card" onclick="showExpenseBreakdown()">
+                    <div class="stat-card" data-action="showExpenses">
                         <div class="stat-label">Gastos</div>
                         <div class="stat-value negative" id="expensesStat">−0€</div>
-                        <div style="font-size: 10px; color: #003366; margin-top: 4px; cursor: pointer;">Ver desglose</div>
+                        <div class="stat-action-link">Ver desglose</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Balance</div>
                         <div class="stat-value" id="balanceStat">0€</div>
                     </div>
-                </div>
+                </section>
 
-                <div class="sidebar-section goals-section">
-                    <div class="sidebar-title">Tus Metas</div>
+                <section class="sidebar-section goals-section">
+                    <h2 class="sidebar-title">Tus Metas</h2>
+                    <button class="create-goal-btn" id="createGoalBtn">
+                        <i class="fas fa-plus"></i>
+                        Nueva Meta
+                    </button>
                     <div id="goalsList"></div>
-                </div>
-            </div>
+                </section>
+            </aside>
 
             <div class="chat-panel">
                 <div class="messages-container" id="messagesContainer">
-                    <div class="initial-message">
-                        <div class="initial-message-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <p>Bienvenido a Financial Goals<br>Tus metas y seguimiento se cargarán en un momento...</p>
-                    </div>
+                    <!-- Los mensajes se insertarán aquí dinámicamente -->
                 </div>
 
                 <div class="input-area">
                     <div class="input-wrapper">
-                        <input 
-                            type="text" 
-                            class="input-field" 
-                            id="inputField" 
-                            placeholder="Pregunta sobre tus metas..." 
-                            disabled
-                        >
+                        <label for="inputField" class="visually-hidden">Pregunta sobre tus metas...</label>
+                        <input type="text" class="input-field" id="inputField" placeholder="Pregunta sobre tus metas..."
+                            disabled>
                     </div>
-                    <button class="send-btn" id="sendBtn" disabled>
+                    <button class="send-btn" id="sendBtn" disabled aria-label="Enviar mensaje">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
-    <button class="open-copilot-btn" id="openCopilotBtn">
+    <!-- 浮动按钮 -->
+    <button class="open-copilot-btn" id="openCopilotBtn" aria-label="Abrir asistente financiero">
         <i class="fas fa-comments"></i>
     </button>
 
-    <script>
-        const state = {
-            isOpen: false,
-            metrics: null,
-            goals: [],
-            selectedGoal: null,
-            currentLanguage: 'es'
-        };
-
-        const elements = {
-            container: document.getElementById('container'),
-            modal: document.getElementById('modalOverlay'),
-            sidebar: document.getElementById('sidebar'),
-            messagesContainer: document.getElementById('messagesContainer'),
-            inputField: document.getElementById('inputField'),
-            sendBtn: document.getElementById('sendBtn'),
-            openBtn: document.getElementById('openCopilotBtn'),
-            headerStatus: document.getElementById('headerStatus'),
-            goalsList: document.getElementById('goalsList'),
-            incomeStat: document.getElementById('incomeStat'),
-            expensesStat: document.getElementById('expensesStat'),
-            balanceStat: document.getElementById('balanceStat')
-        };
-
-        // Datos de categorías (simulado, luego conectar con model.py)
-        const categoryData = {
-            income: {
-                'Salario': 2500.00
-            },
-            expenses: {
-                'Comida | Supermercado': 45.50,
-                'Comida | Restaurante': 55.00,
-                'Comida | Bar/Café': 22.50,
-                'Transporte | Combustible': 60.00,
-                'Servicios | Peluquería': 25.00,
-                'Servicios | Internet/Telefonía': 35.00,
-                'Compras | Ropa': 89.99,
-                'Compras | Electrónica': 0.00,
-                'Ocio | Cine/Entretenimiento': 42.00,
-                'Ocio | Viajes': 150.00,
-                'Banca | Comisión': 2.40
-            }
-        };
-
-        async function loadFinancialData() {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    const mockData = {
-                        analysis: {
-                            total_income: 2500.00,
-                            total_expenses: 540.38,
-                            balance: 1959.62,
-                            transaction_count: 12,
-                            top_expense_category: 'Viajes',
-                            top_expense_amount: 150.00,
-                            top_percentage: 27.75
-                        },
-                        profile: {
-                            profile_type: 'Ahorrador',
-                            expense_ratio: 21.6,
-                            actual_essentials: 123.40,
-                            ideal_essentials: 1250.00,
-                            actual_discretionary: 282.99,
-                            ideal_discretionary: 750.00,
-                            actual_savings: 1959.62,
-                            ideal_savings: 500.00,
-                            expense_volatility: 45.23,
-                            recommendations: [
-                                'Automatiza transferencias de ahorro mensualmente',
-                                'Reduce gastos en entretenimiento un 15%',
-                                'Invierte en fondos de inversión'
-                            ]
-                        }
-                    };
-                    state.metrics = mockData;
-                    resolve(mockData);
-                }, 1500);
-            });
-        }
-
-        function generateGoals(data) {
-            const { analysis, profile } = data;
-            const monthlyIncome = analysis.total_income;
-
-            return [
-                {
-                    id: 1,
-                    title: 'Fondo de Emergencia',
-                    target: monthlyIncome * 3,
-                    current: analysis.balance * 0.4,
-                    deadline: '6 meses',
-                    description: 'Ahorrar 3 meses de gastos para emergencias',
-                    strategy: 'Ahorra 100€ mensuales automáticamente',
-                    priority: 'high'
-                },
-                {
-                    id: 2,
-                    title: 'Reducir Gastos Viajes',
-                    target: 100,
-                    current: Math.max(0, 150 - 50),
-                    deadline: '1 mes',
-                    description: 'Reducir gasto en viajes de 150€ a 100€',
-                    strategy: 'Compara precios 2 semanas antes de viajar',
-                    priority: 'medium'
-                },
-                {
-                    id: 3,
-                    title: 'Objetivo Anual',
-                    target: monthlyIncome * 12 * 0.25,
-                    current: analysis.balance * 0.8,
-                    deadline: '1 año',
-                    description: 'Ahorrar el 25% de ingresos anuales',
-                    strategy: 'Mantén automatización de 20% mensual',
-                    priority: 'high'
-                },
-                {
-                    id: 4,
-                    title: 'Invertir en Fondos',
-                    target: 5000,
-                    current: 0,
-                    deadline: '6 meses',
-                    description: 'Alcanzar 5000€ para inversión inicial',
-                    strategy: 'Transfiere 500€ de tu ahorro actual cada mes',
-                    priority: 'medium'
-                }
-            ];
-        }
-
-        function renderGoals(goals) {
-            elements.goalsList.innerHTML = goals.map(goal => {
-                const progress = Math.min((goal.current / goal.target) * 100, 100);
-                return `
-                    <div class="goal-card" data-goal-id="${goal.id}" onclick="selectGoal(${goal.id})">
-                        <div class="goal-title">${goal.title}</div>
-                        <div class="goal-progress">
-                            <div class="goal-progress-bar" style="width: ${progress}%"></div>
-                        </div>
-                        <div class="goal-percent">${progress.toFixed(0)}% · ${goal.current.toFixed(0)}€ / ${goal.target.toFixed(0)}€</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function selectGoal(goalId) {
-            state.selectedGoal = goalId;
-            document.querySelectorAll('.goal-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            document.querySelector(`[data-goal-id="${goalId}"]`).classList.add('selected');
-
-            // Limpiar chat
-            elements.messagesContainer.innerHTML = '';
-
-            const goal = state.goals.find(g => g.id === goalId);
-            if (goal) {
-                showGoalDetails(goal);
-            }
-        }
-
-        function showGoalDetails(goal) {
-            const remaining = goal.target - goal.current;
-            const progress = (goal.current / goal.target) * 100;
-            
-            const message = `
-                <div style="color: #2d3748; line-height: 1.8;">
-                    <strong>🎯 ${goal.title}</strong><br>
-                    <span style="font-size: 12px; color: #a0aec0;">Prioridad: ${goal.priority === 'high' ? '🔴 Alta' : '🟡 Media'}</span><br><br>
-                    
-                    <strong>Meta:</strong> ${goal.target.toFixed(2)}€<br>
-                    <strong>Progreso:</strong> ${goal.current.toFixed(2)}€ (${progress.toFixed(0)}%)<br>
-                    <strong>Falta:</strong> ${remaining.toFixed(2)}€<br>
-                    <strong>Plazo:</strong> ${goal.deadline}<br><br>
-                    
-                    <strong>📋 Descripción:</strong><br>
-                    ${goal.description}<br><br>
-                    
-                    <strong>💡 Estrategia:</strong><br>
-                    ${goal.strategy}
-                </div>
-            `;
-            
-            addMessage('assistant', message);
-        }
-
-        function handleGoalQuestion(userInput, goal) {
-            const input = userInput.toLowerCase();
-            
-            if (input.includes('cómo') || input.includes('como') || input.includes('estrategia') || input.includes('pasos')) {
-                const monthsMatch = goal.deadline.match(/\d+/);
-                const months = monthsMatch ? parseInt(monthsMatch[0]) : 1;
-                const monthlyAmount = (goal.target - goal.current) / Math.max(months, 1);
-                
-                return `Para lograr "${goal.title}": ${goal.strategy}. Necesitas ${monthlyAmount.toFixed(2)}€ mensuales durante ${goal.deadline}. Puedes automatizar esta transferencia para no olvidarlo.`;
-            } 
-            else if (input.includes('cuánto') || input.includes('cuanto') || input.includes('falta') || input.includes('progreso')) {
-                const remaining = goal.target - goal.current;
-                const progress = (goal.current / goal.target) * 100;
-                
-                if (progress >= 100) {
-                    return `¡Felicitaciones! Ya completaste "${goal.title}". Ahora puedes enfocarte en tu próxima meta.`;
-                } else if (progress >= 75) {
-                    return `Casi lo logras. Te falta solo ${remaining.toFixed(2)}€ para completar "${goal.title}". ¡Estás en el tramo final!`;
-                } else if (progress >= 50) {
-                    return `Vas a mitad de camino. Te falta ${remaining.toFixed(2)}€ para "${goal.title}". Mantén la consistencia.`;
-                } else {
-                    return `Acabas de empezar. Te falta ${remaining.toFixed(2)}€ para alcanzar "${goal.title}". El primer paso es siempre el más importante.`;
-                }
-            }
-            else if (input.includes('alternativa') || input.includes('otra forma') || input.includes('opción')) {
-                return `Alternativa para "${goal.title}": En lugar de ${goal.strategy}, podrías reducir gastos en otras categorías y acelerar el ahorro. ¿Hay alguna categoría donde puedas gastar menos?`;
-            }
-            else if (input.includes('dividir') || input.includes('semanal')) {
-                const monthsMatch = goal.deadline.match(/\d+/);
-                const months = monthsMatch ? parseInt(monthsMatch[0]) : 1;
-                const remaining = goal.target - goal.current;
-                const weeksTotal = months * 4.3;
-                const weeklyAmount = remaining / weeksTotal;
-                
-                return `Dividiendo "${goal.title}" semanalmente: necesitas ahorrar ${weeklyAmount.toFixed(2)}€ cada semana. Esto es más fácil de seguir que pensar en el total.`;
-            }
-            else if (input.includes('motivación') || input.includes('puedo lograrlo') || input.includes('ánimo')) {
-                const progress = (goal.current / goal.target) * 100;
-                return `¡Claro que puedes! Ya tienes el ${progress.toFixed(0)}% de "${goal.title}". Cada euro que ahorres te acerca más. La constancia es la clave.`;
-            }
-            else if (input.includes('riesgo') || input.includes('invertir')) {
-                return `Para "${goal.title}": Una vez que acumules ${goal.target.toFixed(2)}€, considera invertir en ETFs o fondos de inversión con bajo riesgo para multiplicar tu dinero.`;
-            }
-            else {
-                return `Sobre "${goal.title}": ${goal.description}. Tu estrategia es: ${goal.strategy}. ¿Quieres que te ayude a dividirlo en pasos más pequeños o prefieres otra forma de lograrlo?`;
-            }
-        }
-
-        function addMessage(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-            
-            const iconDiv = document.createElement('div');
-            iconDiv.className = 'message-icon';
-            iconDiv.innerHTML = role === 'assistant' ? '<i class="fas fa-lightbulb"></i>' : '<i class="fas fa-user"></i>';
-            
-            const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = 'message-bubble';
-            bubbleDiv.innerHTML = content;
-            
-            if (role === 'assistant') {
-                messageDiv.appendChild(iconDiv);
-                messageDiv.appendChild(bubbleDiv);
-            } else {
-                messageDiv.appendChild(bubbleDiv);
-                messageDiv.appendChild(iconDiv);
-            }
-            
-            elements.messagesContainer.appendChild(messageDiv);
-            elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
-        }
-
-        function handleSendMessage() {
-            const userInput = elements.inputField.value.trim();
-            if (!userInput) return;
-
-            elements.inputField.value = '';
-            elements.sendBtn.disabled = true;
-
-            addMessage('user', escapeHtml(userInput));
-
-            setTimeout(() => {
-                let response = '';
-
-                if (state.selectedGoal) {
-                    const goal = state.goals.find(g => g.id === state.selectedGoal);
-                    response = handleGoalQuestion(userInput, goal);
-                } else {
-                    response = 'Selecciona una meta en la izquierda para obtener recomendaciones personalizadas. O cuéntame qué meta quieres establecer.';
-                }
-
-                addMessage('assistant', response);
-                elements.sendBtn.disabled = false;
-                elements.inputField.focus();
-            }, 500);
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function showIncomeBreakdown() {
-            const incomeHTML = Object.entries(categoryData.income)
-                .map(([cat, amount]) => `<div style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><strong>${cat}</strong>: +${amount.toFixed(2)}€</div>`)
-                .join('');
-            
-            addMessage('assistant', `
-                <div style="color: #2d3748; line-height: 1.6;">
-                    <strong>📊 Desglose de Ingresos</strong><br><br>
-                    ${incomeHTML}
-                    <div style="padding: 8px 0; margin-top: 8px; font-weight: 700; color: #003366;">
-                        Total: +${Object.values(categoryData.income).reduce((a, b) => a + b, 0).toFixed(2)}€
-                    </div>
-                </div>
-            `);
-        }
-
-        function showExpenseBreakdown() {
-            const groupedExpenses = {};
-            Object.entries(categoryData.expenses).forEach(([cat, amount]) => {
-                const category = cat.split(' | ')[0];
-                if (!groupedExpenses[category]) {
-                    groupedExpenses[category] = [];
-                }
-                groupedExpenses[category].push({ name: cat.split(' | ')[1], amount });
-            });
-
-            const expenseHTML = Object.entries(groupedExpenses)
-                .map(([category, items]) => {
-                    const subtotal = items.reduce((a, b) => a + b.amount, 0);
-                    return `
-                        <div style="margin-bottom: 12px; padding: 8px; background: #f7fafc; border-radius: 6px;">
-                            <strong style="color: #003366;">${category}</strong><br>
-                            ${items.map(item => `<div style="padding: 4px 0; font-size: 12px;">• ${item.name}: −${item.amount.toFixed(2)}€</div>`).join('')}
-                            <div style="border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px; font-weight: 600; color: #f56565;">Subtotal: −${subtotal.toFixed(2)}€</div>
-                        </div>
-                    `;
-                }).join('');
-
-            const total = Object.values(categoryData.expenses).reduce((a, b) => a + b, 0);
-            
-            addMessage('assistant', `
-                <div style="color: #2d3748; line-height: 1.6;">
-                    <strong>📊 Desglose de Gastos</strong><br><br>
-                    ${expenseHTML}
-                    <div style="padding: 8px; background: #ffe2e2; border-radius: 6px; margin-top: 8px; font-weight: 700; color: #f56565;">
-                        Total: −${total.toFixed(2)}€
-                    </div>
-                </div>
-            `);
-        }
-
-        function openCopilot() {
-            state.isOpen = true;
-            elements.container.style.display = 'flex';
-            elements.modal.classList.add('show');
-            elements.openBtn.classList.remove('show');
-            elements.inputField.focus();
-        }
-
-        function closeCopilot() {
-            state.isOpen = false;
-            elements.container.style.display = 'none';
-            elements.modal.classList.remove('show');
-            elements.openBtn.classList.add('show');
-        }
-
-        elements.sendBtn.addEventListener('click', handleSendMessage);
-        elements.inputField.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !elements.sendBtn.disabled) {
-                handleSendMessage();
-            }
-        });
-
-        elements.modal.addEventListener('click', (e) => {
-            if (e.target === elements.modal) {
-                closeCopilot();
-            }
-        });
-
-        elements.container.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-
-        elements.openBtn.addEventListener('click', openCopilot);
-
-        async function initialize() {
-            try {
-                elements.openBtn.classList.add('show');
-                const data = await loadFinancialData();
-                
-                state.goals = generateGoals(data);
-                renderGoals(state.goals);
-
-                elements.incomeStat.textContent = `+${data.analysis.total_income.toFixed(2)}€`;
-                elements.expensesStat.textContent = `−${data.analysis.total_expenses.toFixed(2)}€`;
-                elements.balanceStat.textContent = `${data.analysis.balance.toFixed(2)}€`;
-                elements.balanceStat.classList.add('positive');
-
-                elements.messagesContainer.innerHTML = `
-                    <div class="initial-message">
-                        <div class="initial-message-icon" style="font-size: 64px;">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <p><strong>Bienvenido a tus Metas Financieras</strong><br>
-                        Selecciona una meta en la izquierda para ver detalles y estrategias personalizadas.</p>
-                    </div>
-                `;
-
-                elements.headerStatus.textContent = 'Listo';
-                elements.inputField.disabled = false;
-                elements.sendBtn.disabled = false;
-
-                selectGoal(1);
-            } catch (error) {
-                console.error('Error:', error);
-                addMessage('assistant', 'Error cargando datos. Intenta más tarde.');
-            }
-        }
-
-        initialize();
-    </script>
+    <!-- 链接外部JavaScript文件 -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>
