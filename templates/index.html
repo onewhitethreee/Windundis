@@ -25,7 +25,7 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -34,16 +34,28 @@
             flex-direction: column;
             height: 90vh;
             max-height: 900px;
+            z-index: 1000;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px 24px;
+            padding: 16px 24px;
             display: flex;
             align-items: center;
             gap: 12px;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .header-icon {
@@ -55,10 +67,15 @@
             font-weight: 600;
         }
 
-        .header-subtitle {
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-status {
             font-size: 12px;
             opacity: 0.9;
-            margin-left: auto;
         }
 
         .content {
@@ -67,40 +84,45 @@
             overflow: hidden;
         }
 
-        .metrics-panel {
-            width: 280px;
+        .sidebar {
+            width: 300px;
             padding: 20px;
             background: #f7fafc;
             border-right: 1px solid #e2e8f0;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            gap: 16px;
         }
 
-        .metrics-panel h3 {
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-title {
             font-size: 12px;
             text-transform: uppercase;
             color: #718096;
-            margin-bottom: 12px;
             font-weight: 700;
             letter-spacing: 0.5px;
         }
 
-        .metric-card {
+        .stat-card {
             background: white;
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 12px;
             border-left: 3px solid #667eea;
             transition: all 0.2s ease;
         }
 
-        .metric-card:hover {
+        .stat-card:hover {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transform: translateX(2px);
         }
 
-        .metric-label {
+        .stat-label {
             font-size: 11px;
             color: #718096;
             text-transform: uppercase;
@@ -108,47 +130,72 @@
             font-weight: 600;
         }
 
-        .metric-value {
+        .stat-value {
             font-size: 18px;
             font-weight: 700;
             color: #667eea;
         }
 
-        .metric-value.positive {
+        .stat-value.positive {
             color: #48bb78;
         }
 
-        .metric-value.negative {
+        .stat-value.negative {
             color: #f56565;
         }
 
-        .metric-subtitle {
+        .goals-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .goal-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #48bb78;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .goal-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateX(2px);
+        }
+
+        .goal-card.selected {
+            background: #edf2f7;
+            border-left-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .goal-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+
+        .goal-progress {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .goal-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            transition: width 0.3s ease;
+        }
+
+        .goal-percent {
             font-size: 10px;
             color: #a0aec0;
-            margin-top: 4px;
-        }
-
-        .metrics-loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #a0aec0;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .chat-panel {
@@ -220,25 +267,20 @@
         }
 
         .initial-message {
-            text-align: center;
-            color: #a0aec0;
-            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100%;
+            text-align: center;
+            color: #a0aec0;
+            padding: 40px 20px;
         }
 
         .initial-message-icon {
             font-size: 48px;
             color: #cbd5e0;
             margin-bottom: 12px;
-        }
-
-        .initial-message p {
-            font-size: 14px;
-            line-height: 1.6;
         }
 
         .input-area {
@@ -269,10 +311,6 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .input-field::placeholder {
-            color: #cbd5e0;
         }
 
         .send-btn {
@@ -318,7 +356,7 @@
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 999;
+            z-index: 1001;
         }
 
         .open-copilot-btn:hover {
@@ -337,9 +375,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 998;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 997;
             animation: fadeIn 0.2s ease;
+            backdrop-filter: blur(2px);
         }
 
         @keyframes fadeIn {
@@ -359,34 +398,18 @@
                 border-radius: 0;
             }
 
-            .metrics-panel {
+            .sidebar {
                 width: 200px;
             }
 
             .message-bubble {
                 max-width: 85%;
             }
-
-            .open-copilot-btn {
-                bottom: 16px;
-                right: 16px;
-                width: 48px;
-                height: 48px;
-                font-size: 20px;
-            }
         }
 
         @media (max-width: 480px) {
-            .metrics-panel {
+            .sidebar {
                 display: none;
-            }
-
-            .metric-label {
-                font-size: 10px;
-            }
-
-            .metric-value {
-                font-size: 16px;
             }
 
             .message-bubble {
@@ -394,15 +417,18 @@
             }
         }
 
-        .profile-badge {
+        .spinner {
             display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 8px;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -411,18 +437,40 @@
 
     <div class="container" id="container" style="display: none;">
         <div class="header">
-            <div class="header-icon"><i class="fas fa-lightbulb"></i></div>
-            <div>
-                <h1>Financial Assistant</h1>
+            <div class="header-left">
+                <div class="header-icon"><i class="fas fa-target"></i></div>
+                <div>
+                    <h1>Financial Goals</h1>
+                </div>
             </div>
-            <div class="header-subtitle" id="headerStatus">Cargando datos...</div>
+            <div class="header-actions">
+                <div class="header-status" id="headerStatus">Cargando...</div>
+            </div>
         </div>
 
         <div class="content">
-            <div class="metrics-panel" id="metricsPanel">
-                <div class="metrics-loading">
-                    <div class="spinner"></div>
-                    <span>Analizando...</span>
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Resumen Financiero</div>
+                    <div class="stat-card" onclick="showIncomeBreakdown()">
+                        <div class="stat-label">Ingresos</div>
+                        <div class="stat-value positive" id="incomeStat">+0€</div>
+                        <div style="font-size: 10px; color: #667eea; margin-top: 4px; cursor: pointer;">Ver desglose</div>
+                    </div>
+                    <div class="stat-card" onclick="showExpenseBreakdown()">
+                        <div class="stat-label">Gastos</div>
+                        <div class="stat-value negative" id="expensesStat">−0€</div>
+                        <div style="font-size: 10px; color: #667eea; margin-top: 4px; cursor: pointer;">Ver desglose</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Balance</div>
+                        <div class="stat-value" id="balanceStat">0€</div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section goals-section">
+                    <div class="sidebar-title">Tus Metas</div>
+                    <div id="goalsList"></div>
                 </div>
             </div>
 
@@ -432,7 +480,7 @@
                         <div class="initial-message-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <p>Bienvenido a Financial Assistant<br>Tus métricas se cargarán en un momento...</p>
+                        <p>Bienvenido a Financial Goals<br>Tus metas y seguimiento se cargarán en un momento...</p>
                     </div>
                 </div>
 
@@ -442,7 +490,7 @@
                             type="text" 
                             class="input-field" 
                             id="inputField" 
-                            placeholder="Pregunta sobre tus finanzas..." 
+                            placeholder="Pregunta sobre tus metas..." 
                             disabled
                         >
                     </div>
@@ -459,27 +507,49 @@
     </button>
 
     <script>
-        // Estado global
         const state = {
             isOpen: false,
-            isLoading: true,
             metrics: null,
-            messages: [],
-            conversationContext: {}
+            goals: [],
+            selectedGoal: null,
+            currentLanguage: 'es'
         };
 
         const elements = {
             container: document.getElementById('container'),
             modal: document.getElementById('modalOverlay'),
-            metricsPanel: document.getElementById('metricsPanel'),
+            sidebar: document.getElementById('sidebar'),
             messagesContainer: document.getElementById('messagesContainer'),
             inputField: document.getElementById('inputField'),
             sendBtn: document.getElementById('sendBtn'),
             openBtn: document.getElementById('openCopilotBtn'),
-            headerStatus: document.getElementById('headerStatus')
+            headerStatus: document.getElementById('headerStatus'),
+            goalsList: document.getElementById('goalsList'),
+            incomeStat: document.getElementById('incomeStat'),
+            expensesStat: document.getElementById('expensesStat'),
+            balanceStat: document.getElementById('balanceStat')
         };
 
-        // Simular análisis financiero (reemplazar con llamada real a /api/analyze)
+        // Datos de categorías (simulado, luego conectar con model.py)
+        const categoryData = {
+            income: {
+                'Salario': 2500.00
+            },
+            expenses: {
+                'Comida | Supermercado': 45.50,
+                'Comida | Restaurante': 55.00,
+                'Comida | Bar/Café': 22.50,
+                'Transporte | Combustible': 60.00,
+                'Servicios | Peluquería': 25.00,
+                'Servicios | Internet/Telefonía': 35.00,
+                'Compras | Ropa': 89.99,
+                'Compras | Electrónica': 0.00,
+                'Ocio | Cine/Entretenimiento': 42.00,
+                'Ocio | Viajes': 150.00,
+                'Banca | Comisión': 2.40
+            }
+        };
+
         async function loadFinancialData() {
             return new Promise(resolve => {
                 setTimeout(() => {
@@ -490,7 +560,8 @@
                             balance: 1959.62,
                             transaction_count: 12,
                             top_expense_category: 'Viajes',
-                            top_expense_amount: 150.00
+                            top_expense_amount: 150.00,
+                            top_percentage: 27.75
                         },
                         profile: {
                             profile_type: 'Ahorrador',
@@ -503,9 +574,9 @@
                             ideal_savings: 500.00,
                             expense_volatility: 45.23,
                             recommendations: [
-                                'Mantén tu disciplina de ahorro, vas muy bien',
-                                'Considera invertir parte de tus ahorros',
-                                'Tu gasto en viajes fue mayor este mes'
+                                'Automatiza transferencias de ahorro mensualmente',
+                                'Reduce gastos en entretenimiento un 15%',
+                                'Invierte en fondos de inversión'
                             ]
                         }
                     };
@@ -515,79 +586,156 @@
             });
         }
 
-        function renderMetrics(data) {
+        function generateGoals(data) {
             const { analysis, profile } = data;
-            
-            const metricsHTML = `
-                <h3>Resumen Financiero</h3>
-                <div class="metric-card">
-                    <div class="metric-label">Ingresos</div>
-                    <div class="metric-value positive">+${analysis.total_income.toFixed(2)}€</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Gastos</div>
-                    <div class="metric-value negative">−${analysis.total_expenses.toFixed(2)}€</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Balance</div>
-                    <div class="metric-value positive">${analysis.balance.toFixed(2)}€</div>
-                    <div class="metric-subtitle">Neto del período</div>
-                </div>
+            const monthlyIncome = analysis.total_income;
 
-                <h3 style="margin-top: 20px;">Tu Perfil</h3>
-                <div class="metric-card">
-                    <div class="metric-label">Categoría</div>
-                    <div class="metric-value" style="font-size: 14px; color: #667eea;">
-                        ${profile.profile_type}
-                    </div>
-                    <div class="profile-badge">${profile.expense_ratio.toFixed(1)}% gasto/ingreso</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Mayor Gasto</div>
-                    <div class="metric-value" style="font-size: 16px;">
-                        ${analysis.top_expense_category}
-                    </div>
-                    <div class="metric-subtitle">−${analysis.top_expense_amount.toFixed(2)}€</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Volatilidad</div>
-                    <div class="metric-value" style="font-size: 16px; color: #cbd5e0;">
-                        ${profile.expense_volatility.toFixed(2)}€
-                    </div>
-                    <div class="metric-subtitle">Variabilidad de gasto</div>
-                </div>
-            `;
-            
-            elements.metricsPanel.innerHTML = metricsHTML;
+            return [
+                {
+                    id: 1,
+                    title: 'Fondo de Emergencia',
+                    target: monthlyIncome * 3,
+                    current: analysis.balance * 0.4,
+                    deadline: '6 meses',
+                    description: 'Ahorrar 3 meses de gastos para emergencias',
+                    strategy: 'Ahorra 100€ mensuales automáticamente',
+                    priority: 'high'
+                },
+                {
+                    id: 2,
+                    title: 'Reducir Gastos Viajes',
+                    target: 100,
+                    current: Math.max(0, 150 - 50),
+                    deadline: '1 mes',
+                    description: 'Reducir gasto en viajes de 150€ a 100€',
+                    strategy: 'Compara precios 2 semanas antes de viajar',
+                    priority: 'medium'
+                },
+                {
+                    id: 3,
+                    title: 'Objetivo Anual',
+                    target: monthlyIncome * 12 * 0.25,
+                    current: analysis.balance * 0.8,
+                    deadline: '1 año',
+                    description: 'Ahorrar el 25% de ingresos anuales',
+                    strategy: 'Mantén automatización de 20% mensual',
+                    priority: 'high'
+                },
+                {
+                    id: 4,
+                    title: 'Invertir en Fondos',
+                    target: 5000,
+                    current: 0,
+                    deadline: '6 meses',
+                    description: 'Alcanzar 5000€ para inversión inicial',
+                    strategy: 'Transfiere 500€ de tu ahorro actual cada mes',
+                    priority: 'medium'
+                }
+            ];
         }
 
-        function showInitialMetricsMessage(data) {
-            const { analysis, profile } = data;
+        function renderGoals(goals) {
+            elements.goalsList.innerHTML = goals.map(goal => {
+                const progress = Math.min((goal.current / goal.target) * 100, 100);
+                return `
+                    <div class="goal-card" data-goal-id="${goal.id}" onclick="selectGoal(${goal.id})">
+                        <div class="goal-title">${goal.title}</div>
+                        <div class="goal-progress">
+                            <div class="goal-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="goal-percent">${progress.toFixed(0)}% · ${goal.current.toFixed(0)}€ / ${goal.target.toFixed(0)}€</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectGoal(goalId) {
+            state.selectedGoal = goalId;
+            document.querySelectorAll('.goal-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-goal-id="${goalId}"]`).classList.add('selected');
+
+            // Limpiar chat
+            elements.messagesContainer.innerHTML = '';
+
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                showGoalDetails(goal);
+            }
+        }
+
+        function showGoalDetails(goal) {
+            const remaining = goal.target - goal.current;
+            const progress = (goal.current / goal.target) * 100;
             
             const message = `
-                <div style="color: #2d3748; line-height: 1.6;">
-                    <strong>📊 Análisis de tus finanzas:</strong><br><br>
-                    En este período recibiste <strong>+${analysis.total_income.toFixed(2)}€</strong> 
-                    y gastaste <strong>−${analysis.total_expenses.toFixed(2)}€</strong>. 
-                    Tu saldo neto es de <strong>${analysis.balance.toFixed(2)}€</strong>.<br><br>
-                    Eres un <strong>${profile.profile_type}</strong>. Tu mayor gasto fue en 
-                    <strong>${analysis.top_expense_category}</strong> (−${analysis.top_expense_amount.toFixed(2)}€).<br><br>
-                    ${profile.recommendations.length > 0 ? 
-                        '<strong>💡 Recomendaciones:</strong><br>' + 
-                        profile.recommendations.map(r => '• ' + r).join('<br>')
-                        : ''
-                    }
+                <div style="color: #2d3748; line-height: 1.8;">
+                    <strong>🎯 ${goal.title}</strong><br>
+                    <span style="font-size: 12px; color: #a0aec0;">Prioridad: ${goal.priority === 'high' ? '🔴 Alta' : '🟡 Media'}</span><br><br>
+                    
+                    <strong>Meta:</strong> ${goal.target.toFixed(2)}€<br>
+                    <strong>Progreso:</strong> ${goal.current.toFixed(2)}€ (${progress.toFixed(0)}%)<br>
+                    <strong>Falta:</strong> ${remaining.toFixed(2)}€<br>
+                    <strong>Plazo:</strong> ${goal.deadline}<br><br>
+                    
+                    <strong>📋 Descripción:</strong><br>
+                    ${goal.description}<br><br>
+                    
+                    <strong>💡 Estrategia:</strong><br>
+                    ${goal.strategy}
                 </div>
             `;
             
             addMessage('assistant', message);
-            state.conversationContext = {
-                profile: profile.profile_type,
-                totalIncome: analysis.total_income,
-                totalExpenses: analysis.total_expenses,
-                balance: analysis.balance,
-                topExpense: analysis.top_expense_category
-            };
+        }
+
+        function handleGoalQuestion(userInput, goal) {
+            const input = userInput.toLowerCase();
+            
+            if (input.includes('cómo') || input.includes('como') || input.includes('estrategia') || input.includes('pasos')) {
+                const monthsMatch = goal.deadline.match(/\d+/);
+                const months = monthsMatch ? parseInt(monthsMatch[0]) : 1;
+                const monthlyAmount = (goal.target - goal.current) / Math.max(months, 1);
+                
+                return `Para lograr "${goal.title}": ${goal.strategy}. Necesitas ${monthlyAmount.toFixed(2)}€ mensuales durante ${goal.deadline}. Puedes automatizar esta transferencia para no olvidarlo.`;
+            } 
+            else if (input.includes('cuánto') || input.includes('cuanto') || input.includes('falta') || input.includes('progreso')) {
+                const remaining = goal.target - goal.current;
+                const progress = (goal.current / goal.target) * 100;
+                
+                if (progress >= 100) {
+                    return `¡Felicitaciones! Ya completaste "${goal.title}". Ahora puedes enfocarte en tu próxima meta.`;
+                } else if (progress >= 75) {
+                    return `Casi lo logras. Te falta solo ${remaining.toFixed(2)}€ para completar "${goal.title}". ¡Estás en el tramo final!`;
+                } else if (progress >= 50) {
+                    return `Vas a mitad de camino. Te falta ${remaining.toFixed(2)}€ para "${goal.title}". Mantén la consistencia.`;
+                } else {
+                    return `Acabas de empezar. Te falta ${remaining.toFixed(2)}€ para alcanzar "${goal.title}". El primer paso es siempre el más importante.`;
+                }
+            }
+            else if (input.includes('alternativa') || input.includes('otra forma') || input.includes('opción')) {
+                return `Alternativa para "${goal.title}": En lugar de ${goal.strategy}, podrías reducir gastos en otras categorías y acelerar el ahorro. ¿Hay alguna categoría donde puedas gastar menos?`;
+            }
+            else if (input.includes('dividir') || input.includes('semanal')) {
+                const monthsMatch = goal.deadline.match(/\d+/);
+                const months = monthsMatch ? parseInt(monthsMatch[0]) : 1;
+                const remaining = goal.target - goal.current;
+                const weeksTotal = months * 4.3;
+                const weeklyAmount = remaining / weeksTotal;
+                
+                return `Dividiendo "${goal.title}" semanalmente: necesitas ahorrar ${weeklyAmount.toFixed(2)}€ cada semana. Esto es más fácil de seguir que pensar en el total.`;
+            }
+            else if (input.includes('motivación') || input.includes('puedo lograrlo') || input.includes('ánimo')) {
+                const progress = (goal.current / goal.target) * 100;
+                return `¡Claro que puedes! Ya tienes el ${progress.toFixed(0)}% de "${goal.title}". Cada euro que ahorres te acerca más. La constancia es la clave.`;
+            }
+            else if (input.includes('riesgo') || input.includes('invertir')) {
+                return `Para "${goal.title}": Una vez que acumules ${goal.target.toFixed(2)}€, considera invertir en ETFs o fondos de inversión con bajo riesgo para multiplicar tu dinero.`;
+            }
+            else {
+                return `Sobre "${goal.title}": ${goal.description}. Tu estrategia es: ${goal.strategy}. ¿Quieres que te ayude a dividirlo en pasos más pequeños o prefieres otra forma de lograrlo?`;
+            }
         }
 
         function addMessage(role, content) {
@@ -614,7 +762,7 @@
             elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
         }
 
-        async function handleSendMessage() {
+        function handleSendMessage() {
             const userInput = elements.inputField.value.trim();
             if (!userInput) return;
 
@@ -623,34 +771,77 @@
 
             addMessage('user', escapeHtml(userInput));
 
-            // Simular respuesta (reemplazar con llamada real)
             setTimeout(() => {
-                let response = 'Te ayudaré con tu pregunta. ';
-                
-                if (userInput.toLowerCase().includes('ahorro')) {
-                    response += `Basándome en tu perfil de ${state.conversationContext.profile}, 
-                    tu saldo actual es de ${state.conversationContext.balance.toFixed(2)}€. 
-                    Te recomiendo automatizar transferencias mensuales a una cuenta de ahorro.`;
-                } else if (userInput.toLowerCase().includes('gasto')) {
-                    response += `Tu mayor categoría de gasto fue ${state.conversationContext.topExpense}. 
-                    Intenta reducir este tipo de gastos un 15% el próximo mes.`;
-                } else if (userInput.toLowerCase().includes('presupuesto')) {
-                    response += `Con un ingreso de ${state.conversationContext.totalIncome.toFixed(2)}€, 
-                    deberías distribuir: 50% en essenciales, 30% en ocio, 20% en ahorros.`;
+                let response = '';
+
+                if (state.selectedGoal) {
+                    const goal = state.goals.find(g => g.id === state.selectedGoal);
+                    response = handleGoalQuestion(userInput, goal);
                 } else {
-                    response += 'Puedo ayudarte con preguntas sobre tu ahorro, gastos, presupuesto o recomendaciones personalizadas.';
+                    response = 'Selecciona una meta en la izquierda para obtener recomendaciones personalizadas. O cuéntame qué meta quieres establecer.';
                 }
-                
+
                 addMessage('assistant', response);
                 elements.sendBtn.disabled = false;
                 elements.inputField.focus();
-            }, 600);
+            }, 500);
         }
 
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function showIncomeBreakdown() {
+            const incomeHTML = Object.entries(categoryData.income)
+                .map(([cat, amount]) => `<div style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><strong>${cat}</strong>: +${amount.toFixed(2)}€</div>`)
+                .join('');
+            
+            addMessage('assistant', `
+                <div style="color: #2d3748; line-height: 1.6;">
+                    <strong>📊 Desglose de Ingresos</strong><br><br>
+                    ${incomeHTML}
+                    <div style="padding: 8px 0; margin-top: 8px; font-weight: 700; color: #667eea;">
+                        Total: +${Object.values(categoryData.income).reduce((a, b) => a + b, 0).toFixed(2)}€
+                    </div>
+                </div>
+            `);
+        }
+
+        function showExpenseBreakdown() {
+            const groupedExpenses = {};
+            Object.entries(categoryData.expenses).forEach(([cat, amount]) => {
+                const category = cat.split(' | ')[0];
+                if (!groupedExpenses[category]) {
+                    groupedExpenses[category] = [];
+                }
+                groupedExpenses[category].push({ name: cat.split(' | ')[1], amount });
+            });
+
+            const expenseHTML = Object.entries(groupedExpenses)
+                .map(([category, items]) => {
+                    const subtotal = items.reduce((a, b) => a + b.amount, 0);
+                    return `
+                        <div style="margin-bottom: 12px; padding: 8px; background: #f7fafc; border-radius: 6px;">
+                            <strong style="color: #667eea;">${category}</strong><br>
+                            ${items.map(item => `<div style="padding: 4px 0; font-size: 12px;">• ${item.name}: −${item.amount.toFixed(2)}€</div>`).join('')}
+                            <div style="border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px; font-weight: 600; color: #f56565;">Subtotal: −${subtotal.toFixed(2)}€</div>
+                        </div>
+                    `;
+                }).join('');
+
+            const total = Object.values(categoryData.expenses).reduce((a, b) => a + b, 0);
+            
+            addMessage('assistant', `
+                <div style="color: #2d3748; line-height: 1.6;">
+                    <strong>📊 Desglose de Gastos</strong><br><br>
+                    ${expenseHTML}
+                    <div style="padding: 8px; background: #ffe2e2; border-radius: 6px; margin-top: 8px; font-weight: 700; color: #f56565;">
+                        Total: −${total.toFixed(2)}€
+                    </div>
+                </div>
+            `);
         }
 
         function openCopilot() {
@@ -668,7 +859,6 @@
             elements.openBtn.classList.add('show');
         }
 
-        // Event listeners
         elements.sendBtn.addEventListener('click', handleSendMessage);
         elements.inputField.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !elements.sendBtn.disabled) {
@@ -676,24 +866,49 @@
             }
         });
 
-        elements.modal.addEventListener('click', closeCopilot);
+        elements.modal.addEventListener('click', (e) => {
+            if (e.target === elements.modal) {
+                closeCopilot();
+            }
+        });
+
+        elements.container.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
         elements.openBtn.addEventListener('click', openCopilot);
 
-        // Inicialización
         async function initialize() {
             try {
                 elements.openBtn.classList.add('show');
                 const data = await loadFinancialData();
-                renderMetrics(data);
-                showInitialMetricsMessage(data);
                 
-                state.isLoading = false;
+                state.goals = generateGoals(data);
+                renderGoals(state.goals);
+
+                elements.incomeStat.textContent = `+${data.analysis.total_income.toFixed(2)}€`;
+                elements.expensesStat.textContent = `−${data.analysis.total_expenses.toFixed(2)}€`;
+                elements.balanceStat.textContent = `${data.analysis.balance.toFixed(2)}€`;
+                elements.balanceStat.classList.add('positive');
+
+                elements.messagesContainer.innerHTML = `
+                    <div class="initial-message">
+                        <div class="initial-message-icon" style="font-size: 64px;">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <p><strong>Bienvenido a tus Metas Financieras</strong><br>
+                        Selecciona una meta en la izquierda para ver detalles y estrategias personalizadas.</p>
+                    </div>
+                `;
+
                 elements.headerStatus.textContent = 'Listo';
                 elements.inputField.disabled = false;
                 elements.sendBtn.disabled = false;
+
+                selectGoal(1);
             } catch (error) {
                 console.error('Error:', error);
-                addMessage('assistant', 'Error al cargar los datos financieros. Intenta más tarde.');
+                addMessage('assistant', 'Error cargando datos. Intenta más tarde.');
             }
         }
 
