@@ -1,5 +1,6 @@
 import requests
 import os
+from urllib.parse import urlparse, parse_qs
 from dotenv import load_dotenv # 导入 load_dotenv
 
 class RedsysClient:
@@ -19,6 +20,7 @@ class RedsysClient:
         load_dotenv(dotenv_path=env_filepath) # Cargar el archivo .env especificado
 
         self.base_url = "https://apis-i.redsys.es:20443/psd2/xs2a/api-oauth-xs2a/services/rest/BancSabadell/authorize"
+        self.token_url = "https://apis-i.redsys.es:20443/psd2/xs2a/api-oauth-xs2a/services/rest/BancSabadell/token"
         self.request_params = {}
         self._prepare_request_parameters()
 
@@ -71,6 +73,85 @@ class RedsysClient:
         except Exception as e:
             print(f"Error desconocido: {e}")
             return None
+
+    def extract_code_from_redirect_url(self, redirect_url):
+        """
+        从重定向URL中提取code参数
+        Args:
+            redirect_url (str): 包含code参数的重定向URL
+        Returns:
+            str: 提取的code值，如果未找到则返回None
+        """
+        try:
+            parsed_url = urlparse(redirect_url)
+            query_params = parse_qs(parsed_url.query)
+            
+            if 'code' in query_params:
+                return query_params['code'][0]  # parse_qs返回列表，取第一个值
+            else:
+                print("未在URL中找到code参数")
+                return None
+        except Exception as e:
+            print(f"解析URL时出错: {e}")
+            return None
+
+    def get_access_token(self, code):
+        """
+        使用authorization code获取access token
+        Args:
+            code (str): 从重定向URL中提取的authorization code
+        Returns:
+            dict: API响应结果，包含access token等信息
+        """
+        try:
+            # 准备请求数据
+            payload = {
+                'grant_type': 'authorization_code',
+                'client_id': self._get_env_variable('CLIENT_ID'),
+                'code': code,
+                'redirect_uri': self._get_env_variable('REDIRECT_URI'),
+                'code_verifier': self._get_env_variable('CODE_VERIFIER')
+            }
+            
+            # 设置请求头
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+            
+            # 发送POST请求
+            response = requests.post(self.token_url, headers=headers, data=payload)
+            
+            # 检查响应状态
+            response.raise_for_status()
+            
+            # 返回JSON响应
+            return {
+                'success': True,
+                'data': response.json(),
+                'status_code': response.status_code
+            }
+            
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTP错误: {e}")
+            print(f"响应内容: {e.response.text}")
+            return {
+                'success': False,
+                'error': f"HTTP错误: {e}",
+                'status_code': e.response.status_code,
+                'response_text': e.response.text
+            }
+        except requests.exceptions.RequestException as e:
+            print(f"请求错误: {e}")
+            return {
+                'success': False,
+                'error': f"请求错误: {e}"
+            }
+        except Exception as e:
+            print(f"未知错误: {e}")
+            return {
+                'success': False,
+                'error': f"未知错误: {e}"
+            }
 
 if __name__ == "__main__":
     try:

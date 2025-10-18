@@ -41,14 +41,52 @@ def login():
                 "message": "URL de autorización obtenida exitosamente"
             }), 200
         else:
-            return jsonify({"success": False, "error": "未能获取授权URL"}), 500
+            return jsonify({"success": False, "error": "No se pudo obtener la URL de autorización"}), 500
     except FileNotFoundError as e:
-        print(f"配置文件错误: {e}")
-        return jsonify({"success": False, "error": f"配置文件未找到: {str(e)}"}), 500
+        return jsonify({"success": False, "error": f"Archivo de configuración no encontrado: {str(e)}"}), 500
     except Exception as e:
-        print(f"服务器错误: {e}")
-        return jsonify({"success": False, "error": f"服务器内部错误: {str(e)}"}), 500
+        return jsonify({"success": False, "error": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/token', methods=['POST', 'OPTIONS'])
+def get_token():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data or 'redirect_url' not in data:
+            return jsonify({"success": False, "error": "缺少redirect_url参数"}), 400
+        
+        redirect_url = data['redirect_url']
+        
+        client = RedsysClient(env_filepath='redsys.env')
+        
+        # 从重定向URL中提取code
+        code = client.extract_code_from_redirect_url(redirect_url)
+        
+        if not code:
+            return jsonify({"success": False, "error": "无法从URL中提取code参数"}), 400
+        
+        # 使用code获取access token
+        token_result = client.get_access_token(code)
+        
+        if token_result['success']:
+            return jsonify({
+                "success": True,
+                "data": token_result['data'],
+                "message": "Token获取成功"
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "error": token_result['error'],
+                "details": token_result.get('response_text', '')
+            }), 500
+            
+    except FileNotFoundError as e:
+        return jsonify({"success": False, "error": f"Archivo de configuración no encontrado: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error interno: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    # 在生产环境中，你需要使用 Gunicorn 或 uWSGI 等 WSGI 服务器
-    app.run(debug=True, port=8080) # debug=True 会在代码修改后自动重启服务器，方便开发
+    app.run(debug=True, port=8080) 

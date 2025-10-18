@@ -24,6 +24,118 @@
     </div>
 
     <script>
+        // 检查URL参数，看是否包含code（重定向返回）
+        function checkForCodeInURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+            
+            if (code) {
+                console.log('检测到重定向返回，code:', code);
+                console.log('state:', state);
+                
+                // 显示处理状态
+                showProcessingState();
+                
+                // 获取token
+                getTokenFromCode(code);
+            }
+        }
+        
+        // 显示处理状态
+        function showProcessingState() {
+            const loginBox = document.querySelector('.login-box');
+            loginBox.innerHTML = `
+                <div class="login-header">
+                    <i class="fas fa-cog fa-spin"></i>
+                    <h1>Procesando</h1>
+                    <p>Obteniendo token de acceso...</p>
+                </div>
+                <div class="processing-indicator">
+                    <div class="spinner"></div>
+                </div>
+            `;
+        }
+        
+        // 显示成功状态
+        function showSuccessState(tokenData) {
+            const loginBox = document.querySelector('.login-box');
+            loginBox.innerHTML = `
+                <div class="login-header">
+                    <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                    <h1>¡Éxito!</h1>
+                    <p>Token obtenido correctamente</p>
+                </div>
+                <div class="token-info">
+                    <h3>Información del Token:</h3>
+                    <div class="token-details">
+                        <p><strong>Access Token:</strong></p>
+                        <textarea readonly class="token-text">${tokenData.access_token || 'N/A'}</textarea>
+                        <p><strong>Token Type:</strong> ${tokenData.token_type || 'N/A'}</p>
+                        <p><strong>Expires In:</strong> ${tokenData.expires_in || 'N/A'} segundos</p>
+                        <p><strong>Scope:</strong> ${tokenData.scope || 'N/A'}</p>
+                    </div>
+                </div>
+                <button onclick="location.reload()" class="btn btn-login">
+                    <i class="fas fa-redo"></i>
+                    Volver a Iniciar
+                </button>
+            `;
+        }
+        
+        // 显示错误状态
+        function showErrorState(error) {
+            const loginBox = document.querySelector('.login-box');
+            loginBox.innerHTML = `
+                <div class="login-header">
+                    <i class="fas fa-exclamation-triangle" style="color: #f44336;"></i>
+                    <h1>Error</h1>
+                    <p>No se pudo obtener el token</p>
+                </div>
+                <div class="error-info">
+                    <p><strong>Error:</strong> ${error}</p>
+                </div>
+                <button onclick="location.reload()" class="btn btn-login">
+                    <i class="fas fa-redo"></i>
+                    Intentar de Nuevo
+                </button>
+            `;
+        }
+        
+        // 从code获取token
+        function getTokenFromCode(code) {
+            const redirectUrl = window.location.href;
+            
+            fetch('/api/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    redirect_url: redirectUrl
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Token obtenido:', data.data);
+                    showSuccessState(data.data);
+                } else {
+                    console.error('Error al obtener token:', data.error);
+                    showErrorState(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                showErrorState('Error de conexión: ' + error.message);
+            });
+        }
+        
+        // 页面加载时检查URL参数
+        document.addEventListener('DOMContentLoaded', function() {
+            checkForCodeInURL();
+        });
+        
         // 登录功能
         document.getElementById('loginBtn').addEventListener('click', function() {
             // 显示加载状态
