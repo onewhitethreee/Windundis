@@ -2,33 +2,33 @@
 
 Una aplicación web inteligente que combina análisis financiero con IA para ayudar a los usuarios a gestionar sus finanzas personales de manera más efectiva.
 
-## 🚀 Características Principales
+## Características Principales
 
-### 💰 Análisis Financiero Inteligente
+### Análisis Financiero Inteligente
 - **Análisis automático de transacciones bancarias** con clasificación inteligente
 - **Perfil financiero personalizado** basado en patrones de gasto
 - **Gráficos interactivos** para visualizar tendencias financieras
 - **Recomendaciones personalizadas** de ahorro e inversión
 
-### 🤖 Asistente de IA
+### Asistente de IA
 - **Chat financiero** con modelos de IA especializados (ALIA-40b, Salamandra)
 - **Análisis de hábitos financieros** con insights personalizados
 - **Creación de planes de ahorro** adaptados a cada usuario
 - **Mensajes motivacionales** para mantener el progreso hacia metas
 
-### 🏦 Integración Bancaria
+### Integración Bancaria
 - **API de Redsys** para acceso seguro a datos bancarios
 - **Autenticación OAuth2** con BancSabadell
 - **Gestión de pagos** y transferencias
 - **Consulta de estados** de transacciones en tiempo real
 
-### 📊 Visualización de Datos
+### Visualización de Datos
 - **Gráficos interactivos** con Plotly
 - **Dashboard personalizado** con métricas clave
 - **Análisis de presupuesto 50-30-20**
 - **Tendencias de ahorro** y proyecciones
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 ### Backend
 - **Python 3.14** - Lenguaje principal
@@ -57,14 +57,14 @@ Una aplicación web inteligente que combina análisis financiero con IA para ayu
 - **Docker** - Containerización
 - **Python-dotenv** - Gestión de variables de entorno
 
-## 📋 Requisitos del Sistema
+## Requisitos del Sistema
 
 - Python 3.14+
 - Docker (opcional)
 - Navegador web moderno
 - Acceso a internet para APIs de IA
 
-## 🚀 Instalación y Configuración
+## Instalación y Configuración
 
 ### 1. Clonar el Repositorio
 ```bash
@@ -112,7 +112,7 @@ docker run -p 8080:8080 windundis
 ### 5. Acceder a la Aplicación
 Abrir el navegador y navegar a: `http://localhost:8080`
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 Windundis/
@@ -135,7 +135,7 @@ Windundis/
 └── README.md             # Este archivo
 ```
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Autenticación Bancaria
 - `POST /api/login` - Obtener URL de autorización
@@ -157,7 +157,7 @@ Windundis/
 - `POST /api/ai/suggest-tasks` - Sugerir tareas financieras
 - `POST /api/ai/create-smart-goal` - Crear metas SMART
 
-## 🎯 Funcionalidades Detalladas
+## Funcionalidades Detalladas
 
 ### Análisis de Transacciones
 - **Clasificación automática** de gastos por categorías
@@ -178,7 +178,7 @@ Windundis/
 - **Gráfico radar** del perfil financiero
 - **Recomendaciones de ahorro** visuales
 
-## 🔒 Seguridad
+## Seguridad
 
 - **Autenticación OAuth2** con bancos
 - **Tokens de acceso** seguros
@@ -186,11 +186,11 @@ Windundis/
 - **Manejo seguro** de información financiera
 - **CORS configurado** para desarrollo
 
-## 🧪 Datos de Prueba
+## Datos de Prueba
 
 El proyecto incluye un archivo `data.json` con datos de ejemplo para testing y desarrollo.
 
-## 🐳 Docker
+## Docker
 
 ### Construir Imagen
 ```bash
@@ -207,7 +207,7 @@ docker run -p 8080:8080 windundis
 docker run -p 8080:8080 --env-file redsys.env windundis
 ```
 
-## 🔧 Configuración de Desarrollo
+## Configuración de Desarrollo
 
 ### Variables de Entorno Requeridas
 - `CLIENT_ID` - ID del cliente de Redsys
@@ -222,7 +222,7 @@ docker run -p 8080:8080 --env-file redsys.env windundis
 - Modelos: ALIA-40b, Salamandra-7b
 - Endpoint: https://api.publicai.co/v1/chat/completions
 
-## 📊 Métricas y Monitoreo
+## Métricas y Monitoreo
 
 La aplicación genera automáticamente:
 - **Logs de transacciones** y análisis
@@ -230,7 +230,7 @@ La aplicación genera automáticamente:
 - **Estadísticas de uso** de la API
 - **Reportes de errores** detallados
 
-## 🤝 Contribución
+## Contribución
 
 1. Fork el proyecto
 2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
@@ -238,18 +238,18 @@ La aplicación genera automáticamente:
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abrir un Pull Request
 
-## 📝 Licencia
+## Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-## 🆘 Soporte
+## Soporte
 
 Para soporte técnico o preguntas:
 - Crear un issue en el repositorio
 - Contactar al equipo de desarrollo
 - Revisar la documentación de la API
 
-## 🔮 Roadmap
+## Roadmap
 
 ### Próximas Características
 - [ ] Integración con más bancos
@@ -268,4 +268,4 @@ Para soporte técnico o preguntas:
 
 ---
 
-**Desarrollado con ❤️ para mejorar la salud financiera de los usuarios**
+**Desarrollado con cariño para mejorar la salud financiera de los usuarios**
