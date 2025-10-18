@@ -279,21 +279,24 @@ Reglas:
 # --- FUNCIÓN PRINCIPAL ---
 # =================================================================
 
+def get_transactions_data(data_json: dict) -> List[Tuple[str, float]]:
+    with open(data_json, 'r') as file:
+        data = json.load(file)
+    results = []
+    for transaction in data['transactions']['booked']:
+        transactionAmount = float(transaction['transactionAmount']['amount'])
+        description = transaction['remittanceInformationUnstructured']
+        results.append((description, transactionAmount))
+    return results
+
+
 def main():
     print("\n" + "="*70)
     print("💸 ANALIZADOR FINANCIERO AUTOMATIZADO")
     print("="*70 + "\n")
     
     # Datos de ejemplo
-    transactions_data = [
-        ("Corte de pelo en peluquería La Barbería", -25.00),
-        ("Salario mes de octubre Tech Solutions", 2500.00),
-        ("Compra en Mercadona", -85.50),
-        ("Abono mensual Netflix", -12.99),
-        ("Cena en restaurante El Chef", -55.00),
-        ("Recarga de combustible Repsol", -60.00),
-        ("Compra de libros Casa del Libro", -30.00),
-    ]
+    transactions_data = get_transactions_data("data.json")
     
     # PASO 1: Clasificación
     print("📋 PASO 1: Clasificando transacciones...")

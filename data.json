@@ -1,168 +1,441 @@
 {
-    "id_cliente": "CLI001",
-    "nombre_cliente": "Ana García",
-    "fecha_actual": "2023-10-26",
-    "saldo_actual": 2500.75,
-    "movimientos_cuenta": [
-        {
-            "id_movimiento": "MOV00101",
-            "fecha": "2023-10-25",
-            "descripcion": "Compra en Supermercado DIA",
-            "categoria": "Alimentación",
-            "monto": -75.20,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00102",
-            "fecha": "2023-10-25",
-            "descripcion": "Café con amigos",
-            "categoria": "Ocio y Restaurantes",
-            "monto": -8.50,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00103",
-            "fecha": "2023-10-24",
-            "descripcion": "Pago recibo de luz",
-            "categoria": "Facturas y Servicios",
-            "monto": -65.10,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00104",
-            "fecha": "2023-10-24",
-            "descripcion": "Cena en Restaurante 'La Tapería'",
-            "categoria": "Ocio y Restaurantes",
-            "monto": -45.50,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00105",
-            "fecha": "2023-10-23",
-            "descripcion": "Suscripción Netflix",
-            "categoria": "Entretenimiento",
-            "monto": -12.99,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00106",
-            "fecha": "2023-10-23",
-            "descripcion": "Gasolina Repsol",
-            "categoria": "Transporte",
-            "monto": -40.00,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00107",
-            "fecha": "2023-10-22",
-            "descripcion": "Nómina Mensual",
-            "categoria": "Ingresos",
-            "monto": 1800.00,
-            "tipo": "Ingreso"
-        },
-        {
-            "id_movimiento": "MOV00108",
-            "fecha": "2023-10-22",
-            "descripcion": "Transporte Público - Abono",
-            "categoria": "Transporte",
-            "monto": -25.00,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00109",
-            "fecha": "2023-10-21",
-            "descripcion": "Retirada de Efectivo Cajero",
-            "categoria": "Efectivo",
-            "monto": -100.00,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00110",
-            "fecha": "2023-10-20",
-            "descripcion": "Compra online Amazon (libros)",
-            "categoria": "Compras",
-            "monto": -32.70,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00111",
-            "fecha": "2023-10-19",
-            "descripcion": "Visita al dentista",
-            "categoria": "Salud y Bienestar",
-            "monto": -80.00,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00112",
-            "fecha": "2023-10-18",
-            "descripcion": "Transferencia recibida (amigo)",
-            "categoria": "Ingresos",
-            "monto": 20.00,
-            "tipo": "Ingreso"
-        },
-        {
-            "id_movimiento": "MOV00113",
-            "fecha": "2023-10-17",
-            "descripcion": "Pago cuota gimnasio",
-            "categoria": "Salud y Bienestar",
-            "monto": -30.00,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00114",
-            "fecha": "2023-10-16",
-            "descripcion": "Recibo de internet",
-            "categoria": "Facturas y Servicios",
-            "monto": -45.99,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00115",
-            "fecha": "2023-10-15",
-            "descripcion": "Reparación de coche (taller)",
-            "categoria": "Vehículo",
-            "monto": -150.00,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00116",
-            "fecha": "2023-10-14",
-            "descripcion": "Almuerzo de trabajo",
-            "categoria": "Ocio y Restaurantes",
-            "monto": -18.75,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00117",
-            "fecha": "2023-10-13",
-            "descripcion": "Recorrido en tren",
-            "categoria": "Transporte",
-            "monto": -12.00,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00118",
-            "fecha": "2023-10-12",
-            "descripcion": "Compra en Farmacia",
-            "categoria": "Salud y Bienestar",
-            "monto": -22.50,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00119",
-            "fecha": "2023-10-11",
-            "descripcion": "Recibo de teléfono móvil",
-            "categoria": "Servicios",
-            "monto": -29.99,
-            "tipo": "Gasto"
-        },
-        {
-            "id_movimiento": "MOV00120",
-            "fecha": "2023-10-10",
-            "descripcion": "Compra semanal de supermercado",
-            "categoria": "Alimentación",
-            "monto": -90.30,
-            "tipo": "Gasto"
+    "account": {
+        "iban": "ES9500810602640008888806",
+        "currency": "EUR"
+    },
+    "transactions": {
+        "booked": [
+            {
+                "transactionId": "20180629033672400000",
+                "entryReference": "20180629033672400000",
+                "endToEndId": "abcdefghijklmno12345678901234568336",
+                "bookingDate": "2025-02-01",
+                "valueDate": "2025-02-01",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-111.00"
+                },
+                "creditorName": "BENEFICIARI TARGET 2",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "BENEFICIARI TARGET 2",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A BENEFICIARI TARGET 2/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20190130032619800000",
+                "entryReference": "20190130032619800000",
+                "endToEndId": "abcdefghijklmno12345678901234568324",
+                "bookingDate": "2025-02-01",
+                "valueDate": "2025-02-01",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-1.02"
+                },
+                "creditorName": "TRF0092",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "TRF0092",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A TRF0092/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20190205030514700000",
+                "entryReference": "20190205030514700000",
+                "endToEndId": "abcdefghijklmno12345678901234568300",
+                "bookingDate": "2025-02-01",
+                "valueDate": "2025-02-01",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-1.05"
+                },
+                "creditorName": "TRF095",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "TRF095",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A TRF095/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20190206029462200000",
+                "entryReference": "20190206029462200000",
+                "endToEndId": "abcdefghijklmno12345678901234568288",
+                "bookingDate": "2025-02-01",
+                "valueDate": "2025-02-01",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-2.03"
+                },
+                "creditorName": "test",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "test",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A test/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20190201030865600000",
+                "entryReference": "20190201030865600000",
+                "endToEndId": "abcdefghijklmno12345678901234568304",
+                "bookingDate": "2025-02-03",
+                "valueDate": "2025-02-03",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-1.05"
+                },
+                "creditorName": "TRF095",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "TRF095",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A TRF095/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20190204030602400000",
+                "entryReference": "20190204030602400000",
+                "endToEndId": "abcdefghijklmno12345678901234568301",
+                "bookingDate": "2025-02-03",
+                "valueDate": "2025-02-03",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.00"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20190130032181300000",
+                "entryReference": "20190130032181300000",
+                "endToEndId": "abcdefghijklmno12345678901234568319",
+                "bookingDate": "2025-02-05",
+                "valueDate": "2025-02-05",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.00"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20190130032444400000",
+                "entryReference": "20190130032444400000",
+                "endToEndId": "abcdefghijklmno12345678901234568322",
+                "bookingDate": "2025-02-05",
+                "valueDate": "2025-02-05",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-1.04"
+                },
+                "creditorName": "TRF094",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "TRF094",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A TRF094/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20190206029549900000",
+                "entryReference": "20190206029549900000",
+                "endToEndId": "abcdefghijklmno12345678901234568289",
+                "bookingDate": "2025-02-06",
+                "valueDate": "2025-02-06",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.95"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20190130032356700000",
+                "entryReference": "20190130032356700000",
+                "endToEndId": "abcdefghijklmno12345678901234568321",
+                "bookingDate": "2025-02-07",
+                "valueDate": "2025-02-07",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.00"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20190205030427000000",
+                "entryReference": "20190205030427000000",
+                "endToEndId": "abcdefghijklmno12345678901234568299",
+                "bookingDate": "2025-02-07",
+                "valueDate": "2025-02-07",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.00"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20190206029374500000",
+                "entryReference": "20190206029374500000",
+                "endToEndId": "abcdefghijklmno12345678901234568287",
+                "bookingDate": "2025-02-07",
+                "valueDate": "2025-02-07",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.95"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20190206029199000000",
+                "entryReference": "20190206029199000000",
+                "endToEndId": "abcdefghijklmno12345678901234568285",
+                "bookingDate": "2025-02-08",
+                "valueDate": "2025-02-08",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.00"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20180629033321500000",
+                "entryReference": "20180629033321500000",
+                "endToEndId": "abcdefghijklmno12345678901234568332",
+                "bookingDate": "2025-02-10",
+                "valueDate": "2025-02-10",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.00"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20190131031567300000",
+                "entryReference": "20190131031567300000",
+                "endToEndId": "abcdefghijklmno12345678901234568312",
+                "bookingDate": "2025-02-10",
+                "valueDate": "2025-02-10",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-1.02"
+                },
+                "creditorName": "TRF0092",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "TRF0092",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A TRF0092/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20180629033847800000",
+                "entryReference": "20180629033847800000",
+                "endToEndId": "abcdefghijklmno12345678901234568338",
+                "bookingDate": "2025-02-11",
+                "valueDate": "2025-02-11",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-61.00"
+                },
+                "creditorName": "BENEFICIARI TARGET 2",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "BENEFICIARI TARGET 2",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A BENEFICIARI TARGET 2/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20180629033584700000",
+                "entryReference": "20180629033584700000",
+                "endToEndId": "abcdefghijklmno12345678901234568335",
+                "bookingDate": "2025-02-11",
+                "valueDate": "2025-02-11",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-12.50"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            },
+            {
+                "transactionId": "20190130032532100000",
+                "entryReference": "20190130032532100000",
+                "endToEndId": "abcdefghijklmno12345678901234568323",
+                "bookingDate": "2025-02-11",
+                "valueDate": "2025-02-11",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.00"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            }
+        ],
+        "pending": [
+            {
+                "transactionId": "20190206028935900000",
+                "entryReference": "20190206028935900000",
+                "endToEndId": "abcdefghijklmno12345678901234568282",
+                "bookingDate": "2025-02-01",
+                "valueDate": "2025-02-01",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-8.01"
+                },
+                "creditorName": "TEST",
+                "creditorAccount": {
+                    "iban": "ES3333333333333333333333",
+                    "currency": "000"
+                },
+                "ultimateCreditor": "TEST",
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "TRANSFERENCIA A TEST/DB/BSABESBB/CB/BSABESBBXXX/TXT/"
+            },
+            {
+                "transactionId": "20190206029023600000",
+                "entryReference": "20190206029023600000",
+                "endToEndId": "abcdefghijklmno12345678901234568283",
+                "bookingDate": "2025-02-08",
+                "valueDate": "2025-02-08",
+                "transactionAmount": {
+                    "currency": "EUR",
+                    "amount": "-5.00"
+                },
+                "creditorAccount": {
+                    "iban": "ES9500810602640008888806",
+                    "currency": "000"
+                },
+                "debtorAccount": {
+                    "iban": "ES1800810602610001111120",
+                    "currency": "000"
+                },
+                "remittanceInformationUnstructured": "COMISIONES/DB/BSABESBB/TXT/"
+            }
+        ],
+        "_links": {
+            "account": {
+                "href": "/v1.1/accounts/ES9500810602640008888806"
+            },
+            "next": {
+                "href": "/v1.1/accounts/ES9500810602640008888806/transactions?link=eyJ6aXAiOiJERUYiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eNokirEOgjAURf-lA5OV10dBakKcNHEVBxPj8AoVCdAaWhw0_rsQz3TPzfmwMF5OR7ZlCSKlaU5ca5JcqlpypU3Cc4143-RGolBsxfrWdnMdv8RaxFRVbrLBx_tSpQC5gAwwkzDPBcjiMJL1VIXWWb-rKZjD6IYCARMugIOIlu_sCjv1faSd61rblIHC5AvtwiN6UmOudhq0GW8F_tW3bzMLsO8PAAD__w.UYjkSy4G74-UefJi_GhY9k-je05eOF5pJAWetwBXctg"
+            },
+            "last": {
+                "href": "/v1.1/accounts/ES9500810602640008888806/transactions?link=eyJ6aXAiOiJERUYiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eNokjD0PgjAURf9LByYrrx8gNWmcNHEVBxPj8AoVCdAaWhw0_nch3umem5P7IXG8nI5kSwTnmGUFUmNQUqlqSZWxghaG8_umsJIzRVakb1032-mLrVmKVeUnF0O6L1UGUDDIgecS5roE8jSO6AJWsfUu7GqM9jD6QXPggjKgwJJlO3vtpr5PjPdd65oyYpyCNj4-kic29uqmwdjxpsUfQ_u2t_mDfH8AAAD__w.K9Lg_kDD1jL9kEViDjQCoSlvkZ4g3wkkhL7o-1LO2oc"
+            }
         }
-    ]
+    }
 }

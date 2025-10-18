@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Windundis - Login</title>
+    <!-- 确保这里的 style.css 指向你重构后的新 CSS 文件 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
-    <div class="login-container">
-        <div class="login-box">
+    <!-- 使用新的布局容器类 -->
+    <div class="page-container">
+        <!-- 使用 .card 作为主容器，并为其添加一个ID以便JS精准定位 -->
+        <div id="app-card" class="card">
             <div class="login-header">
-                <i class="fas fa-university"></i>
+                <!-- 为图标添加 .icon 类 -->
+                <i class="fas fa-university icon"></i>
                 <h1>Windundis</h1>
                 <p>Servicios de API Bancaria</p>
             </div>
-            
-            <button id="loginBtn" class="btn btn-login">
+
+            <!-- 使用新的按钮组件类 -->
+            <button id="loginBtn" class="btn btn--primary">
                 <i class="fas fa-sign-in-alt"></i>
                 Iniciar Sesión
             </button>
@@ -24,178 +31,436 @@
     </div>
 
     <script>
+        // 目标主容器
+        const appCard = document.getElementById('app-card');
+
         // 检查URL参数，看是否包含code（重定向返回）
         function checkForCodeInURL() {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const state = urlParams.get('state');
-            
+
             if (code) {
                 console.log('检测到重定向返回，code:', code);
                 console.log('state:', state);
-                
-                // 显示处理状态
+
                 showProcessingState();
-                
-                // 获取token
                 getTokenFromCode(code);
             }
         }
-        
+
         // 显示处理状态
         function showProcessingState() {
-            const loginBox = document.querySelector('.login-box');
-            loginBox.innerHTML = `
+            appCard.innerHTML = `
                 <div class="login-header">
-                    <i class="fas fa-cog fa-spin"></i>
+                    <!-- 为图标添加 .icon 类 -->
+                    <i class="fas fa-cog fa-spin icon"></i>
                     <h1>Procesando</h1>
                     <p>Obteniendo token de acceso...</p>
                 </div>
-                <div class="processing-indicator">
-                    <div class="spinner"></div>
-                </div>
+                <div class="spinner"></div>
             `;
         }
-        
+
         // 显示成功状态
         function showSuccessState(tokenData) {
-            const loginBox = document.querySelector('.login-box');
-            loginBox.innerHTML = `
+            appCard.innerHTML = `
                 <div class="login-header">
-                    <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                    <!-- 使用新的图标类，移除内联样式 -->
+                    <i class="fas fa-check-circle icon icon--success"></i>
                     <h1>¡Éxito!</h1>
                     <p>Token obtenido correctamente</p>
                 </div>
-                <div class="token-info">
-                    <h3>Información del Token:</h3>
-                    <div class="token-details">
+                <!-- 使用新的 info-section 组件 -->
+                <div class="info-section">
+                    <h3 class="info-section__title">Información del Token:</h3>
+                    <!-- 使用新的 card__details 组件 -->
+                    <div class="card__details">
                         <p><strong>Access Token:</strong></p>
-                        <textarea readonly class="token-text">${tokenData.access_token || 'N/A'}</textarea>
+                        <!-- 使用新的 info-section__textarea 类 -->
+                        <textarea readonly class="info-section__textarea">${tokenData.access_token || 'N/A'}</textarea>
                         <p><strong>Token Type:</strong> ${tokenData.token_type || 'N/A'}</p>
                         <p><strong>Expires In:</strong> ${tokenData.expires_in || 'N/A'} segundos</p>
                         <p><strong>Scope:</strong> ${tokenData.scope || 'N/A'}</p>
                     </div>
                 </div>
-                <button onclick="location.reload()" class="btn btn-login">
+                <!-- 同样使用 info-section 组件 -->
+                <div class="info-section">
+                    <h3 class="info-section__title">Prueba de Pago</h3>
+                    <p>Configura los parámetros del pago o usa los valores por defecto:</p>
+                    
+                    <form class="payment-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="amount">Cantidad (EUR):</label>
+                                <!-- 为所有输入框添加 .form-control 类 -->
+                                <input type="number" id="amount" name="amount" value="500.00" step="0.01" min="0.01" max="999999.99" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="debtorIban">IBAN Deudor:</label>
+                                <input type="text" id="debtorIban" name="debtorIban" value="ES6200810602620003333338" maxlength="34" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="creditorIban">IBAN Acreedor:</label>
+                                <input type="text" id="creditorIban" name="creditorIban" value="ES2640000418401234567599" maxlength="34" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="creditorName">Nombre Acreedor:</label>
+                                <input type="text" id="creditorName" name="creditorName" value="Nombre Beneficiario" maxlength="70" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                             <div class="form-group">
+                                <label for="creditorAgent">Código Acreedor:</label>
+                                <input type="text" id="creditorAgent" name="creditorAgent" value="XXXLESMMXXX" maxlength="11" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="remittanceInfo">Concepto:</label>
+                                <input type="text" id="remittanceInfo" name="remittanceInfo" value="Concepto" maxlength="140" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="streetName">Calle:</label>
+                                <input type="text" id="streetName" name="streetName" value="Ejemplo de Calle" maxlength="70" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="buildingNumber">Número:</label>
+                                <input type="text" id="buildingNumber" name="buildingNumber" value="5" maxlength="16" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="townName">Ciudad:</label>
+                                <input type="text" id="townName" name="townName" value="Cordoba" maxlength="35" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="postCode">Código Postal:</label>
+                                <input type="text" id="postCode" name="postCode" value="14100" maxlength="16" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                             <!-- 使用新的 btn--secondary 类 -->
+                            <button type="button" id="useDefaultBtn" class="btn btn--secondary">
+                                <i class="fas fa-undo"></i>
+                                Usar Valores por Defecto
+                            </button>
+                             <!-- 使用新的 btn--primary 类 -->
+                            <button type="button" id="paymentBtn" class="btn btn--primary">
+                                <i class="fas fa-credit-card"></i>
+                                Crear Pago de Prueba
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- 使用新的 btn--primary 类 -->
+                <button onclick="location.reload()" class="btn btn--primary">
                     <i class="fas fa-redo"></i>
                     Volver a Iniciar
                 </button>
             `;
+
+            document.getElementById('paymentBtn').addEventListener('click', function () {
+                const paymentData = getPaymentFormData();
+                if (paymentData) {
+                    createPaymentTest(tokenData.access_token, paymentData);
+                }
+            });
+
+            document.getElementById('useDefaultBtn').addEventListener('click', function () {
+                resetPaymentFormToDefaults();
+            });
         }
-        
+
         // 显示错误状态
         function showErrorState(error) {
-            const loginBox = document.querySelector('.login-box');
-            loginBox.innerHTML = `
+            appCard.innerHTML = `
                 <div class="login-header">
-                    <i class="fas fa-exclamation-triangle" style="color: #f44336;"></i>
+                    <!-- 使用新的图标类，移除内联样式 -->
+                    <i class="fas fa-exclamation-triangle icon icon--error"></i>
                     <h1>Error</h1>
                     <p>No se pudo obtener el token</p>
                 </div>
-                <div class="error-info">
-                    <p><strong>Error:</strong> ${error}</p>
+                <!-- 使用 info-section 和 card__details 并添加错误修饰符 -->
+                <div class="info-section info-section--error">
+                    <div class="card__details">
+                        <p><strong>Error:</strong> ${error}</p>
+                    </div>
                 </div>
-                <button onclick="location.reload()" class="btn btn-login">
+                <!-- 使用新的按钮类 -->
+                <button onclick="location.reload()" class="btn btn--primary">
                     <i class="fas fa-redo"></i>
                     Intentar de Nuevo
                 </button>
             `;
         }
-        
-        // 从code获取token
-        function getTokenFromCode(code) {
-            const redirectUrl = window.location.href;
-            
-            fetch('/api/token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    redirect_url: redirectUrl
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Token obtenido:', data.data);
-                    showSuccessState(data.data);
-                } else {
-                    console.error('Error al obtener token:', data.error);
-                    showErrorState(data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error en la solicitud:', error);
-                showErrorState('Error de conexión: ' + error.message);
+
+        // 显示支付创建成功状态
+        function showPaymentCreatedState(paymentData, accessToken) {
+            appCard.innerHTML = `
+                <div class="login-header">
+                    <i class="fas fa-credit-card icon"></i>
+                    <h1>Pago Creado</h1>
+                    <p>Se ha creado el pago de prueba</p>
+                </div>
+                <div class="info-section">
+                    <h3 class="info-section__title">Información del Pago:</h3>
+                    <div class="card__details">
+                        <p><strong>Payment ID:</strong> ${paymentData.payment_id || 'N/A'}</p>
+                        <p><strong>Estado:</strong> ${paymentData.transaction_status || 'N/A'}</p>
+                        <p><strong>Request ID:</strong> ${paymentData.request_id || 'N/A'}</p>
+                    </div>
+                </div>
+                <div class="sca-section">
+                    <h3>Autorización Requerida</h3>
+                    <p>El pago requiere autorización del usuario. Haz clic en el botón para continuar:</p>
+                    <!-- 使用新的按钮类 -->
+                    <button id="scaBtn" class="btn btn--primary">
+                        <i class="fas fa-shield-alt"></i>
+                        Autorizar Pago
+                    </button>
+                </div>
+                <div class="status-section">
+                    <!-- 使用新的按钮类 -->
+                    <button id="statusBtn" class="btn btn--secondary">
+                        <i class="fas fa-info-circle"></i>
+                        Verificar Estado
+                    </button>
+                </div>
+                <button onclick="location.reload()" class="btn btn--primary">
+                    <i class="fas fa-redo"></i>
+                    Volver a Iniciar
+                </button>
+            `;
+
+            if (paymentData.sca_redirect_url) {
+                document.getElementById('scaBtn').addEventListener('click', function () {
+                    window.open(paymentData.sca_redirect_url, '_blank');
+                });
+            } else {
+                document.getElementById('scaBtn').disabled = true;
+                document.getElementById('scaBtn').innerHTML = '<i class="fas fa-exclamation-triangle"></i> URL no disponible';
+            }
+
+            document.getElementById('statusBtn').addEventListener('click', function () {
+                checkPaymentStatus(accessToken, paymentData.payment_id);
             });
         }
-        
-        // 页面加载时检查URL参数
-        document.addEventListener('DOMContentLoaded', function() {
-            checkForCodeInURL();
-        });
-        
-        // 登录功能
-        document.getElementById('loginBtn').addEventListener('click', function() {
-            // 显示加载状态
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
-            this.disabled = true;
-            
-            // 调用后端登录端点
-            fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                redirect: 'manual', // 手动处理重定向
-                credentials: 'same-origin' // 包含cookies
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                console.log('Response type:', response.type);
-                
-                // 处理重定向响应
-                if (response.type === 'opaqueredirect' || response.status === 302 || response.status === 301) {
-                    // 对于重定向，我们需要从Location头获取URL
-                    const location = response.headers.get('Location');
-                    if (location) {
-                        window.location.href = location;
-                        return;
-                    }
-                }
-                
-                // 处理正常响应
-                if (response.ok) {
-                    return response.json().then(data => {
-                        if (data.success && data.redirect_url) {
-                            window.location.href = data.redirect_url;
-                        } else {
-                            throw new Error(data.error || 'Error desconocido');
-                        }
-                    });
-                } else {
-                    // 处理HTTP错误
-                    return response.text().then(text => {
-                        let errorMsg = `HTTP Error: ${response.status}`;
-                        try {
-                            const data = JSON.parse(text);
-                            errorMsg = data.error || errorMsg;
-                        } catch (e) {
-                            errorMsg = text || errorMsg;
-                        }
-                        throw new Error(errorMsg);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al iniciar sesión: ' + error.message);
-                // 恢复按钮状态
-                this.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
-                this.disabled = false;
+
+        // 显示支付状态
+        function showPaymentStatusState(statusData, accessToken, paymentId) {
+            appCard.innerHTML = `
+                <div class="login-header">
+                    <i class="fas fa-info-circle icon" style="color:var(--color-warning);"></i>
+                    <h1>Estado del Pago</h1>
+                    <p>Información actualizada del pago</p>
+                </div>
+                <div class="info-section">
+                    <h3 class="info-section__title">Estado Actual:</h3>
+                    <div class="card__details">
+                        <p><strong>Payment ID:</strong> ${paymentId}</p>
+                        <p><strong>Estado:</strong> ${statusData.transactionStatus || 'N/A'}</p>
+                        <p><strong>Última actualización:</strong> ${new Date().toLocaleString()}</p>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button id="refreshStatusBtn" class="btn btn--secondary">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualizar Estado
+                    </button>
+                </div>
+                <button onclick="location.reload()" class="btn btn--primary">
+                    <i class="fas fa-redo"></i>
+                    Volver a Iniciar
+                </button>
+            `;
+
+            document.getElementById('refreshStatusBtn').addEventListener('click', function () {
+                checkPaymentStatus(accessToken, paymentId);
             });
+        }
+
+        // 显示支付错误状态
+        function showPaymentErrorState(error) {
+            appCard.innerHTML = `
+                <div class="login-header">
+                    <i class="fas fa-exclamation-triangle icon icon--error"></i>
+                    <h1>Error en Pago</h1>
+                    <p>No se pudo procesar el pago</p>
+                </div>
+                <div class="info-section info-section--error">
+                    <div class="card__details">
+                        <p><strong>Error:</strong> ${error}</p>
+                    </div>
+                </div>
+                <button onclick="location.reload()" class="btn btn--primary">
+                    <i class="fas fa-redo"></i>
+                    Intentar de Nuevo
+                </button>
+            `;
+        }
+
+        // 保持其他JS函数不变...
+        function getPaymentFormData() {
+            const amount = document.getElementById('amount').value;
+            const debtorIban = document.getElementById('debtorIban').value;
+            const creditorIban = document.getElementById('creditorIban').value;
+            const creditorName = document.getElementById('creditorName').value;
+            const creditorAgent = document.getElementById('creditorAgent').value;
+            const remittanceInfo = document.getElementById('remittanceInfo').value;
+            const streetName = document.getElementById('streetName').value;
+            const buildingNumber = document.getElementById('buildingNumber').value;
+            const townName = document.getElementById('townName').value;
+            const postCode = document.getElementById('postCode').value;
+
+            if (!validatePaymentForm(amount, debtorIban, creditorIban, creditorName, creditorAgent, remittanceInfo, streetName, buildingNumber, townName, postCode)) {
+                return null;
+            }
+
+            return {
+                "instructedAmount": { "currency": "EUR", "amount": parseFloat(amount).toFixed(2) },
+                "debtorAccount": { "iban": debtorIban.toUpperCase(), "currency": "EUR" },
+                "creditorAccount": { "iban": creditorIban.toUpperCase(), "currency": "EUR" },
+                "creditorName": creditorName,
+                "creditorAgent": creditorAgent.toUpperCase(),
+                "creditorAddress": { "streetName": streetName, "buildingNumber": buildingNumber, "townName": townName, "postCode": postCode, "country": "ES" },
+                "chargeBearer": "SHAR",
+                "remittanceInformationUnstructured": remittanceInfo
+            };
+        }
+
+        function validatePaymentForm(amount, debtorIban, creditorIban, creditorName, creditorAgent, remittanceInfo, streetName, buildingNumber, townName, postCode) {
+            let isValid = true;
+            let errorMessage = "";
+            let fields = [
+                { value: amount, name: "Amount", validate: (v) => !v || isNaN(v) || parseFloat(v) <= 0, message: "La cantidad debe ser un número positivo" },
+                { value: debtorIban, name: "Debtor IBAN", validate: (v) => !v || !isValidIBAN(v), message: "IBAN del deudor no es válido" },
+                { value: creditorIban, name: "Creditor IBAN", validate: (v) => !v || !isValidIBAN(v), message: "IBAN del acreedor no es válido" },
+                { value: creditorName, name: "Creditor Name", validate: (v) => !v.trim(), message: "El nombre del acreedor es obligatorio" },
+                { value: creditorAgent, name: "Creditor Agent", validate: (v) => !v.trim(), message: "El código del acreedor es obligatorio" },
+                { value: remittanceInfo, name: "Concept", validate: (v) => !v.trim(), message: "El concepto es obligatorio" },
+                { value: streetName, name: "Street", validate: (v) => !v.trim(), message: "La calle es obligatoria" },
+                { value: buildingNumber, name: "Building Number", validate: (v) => !v.trim(), message: "El número de edificio es obligatorio" },
+                { value: townName, name: "Town", validate: (v) => !v.trim(), message: "La ciudad es obligatoria" },
+                { value: postCode, name: "Post Code", validate: (v) => !v.trim(), message: "El código postal es obligatorio" }
+            ];
+
+            fields.forEach(field => {
+                if (field.validate(field.value)) {
+                    errorMessage += `• ${field.message}\n`;
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                alert("Por favor, corrige los siguientes errores:\n\n" + errorMessage);
+            }
+
+            return isValid;
+        }
+
+        function isValidIBAN(iban) {
+            iban = iban.replace(/\s/g, '').toUpperCase();
+            if (iban.length !== 24 || !iban.startsWith('ES')) return false;
+            return /^\d{22}$/.test(iban.substring(2));
+        }
+
+        function resetPaymentFormToDefaults() {
+            document.getElementById('amount').value = '500.00';
+            document.getElementById('debtorIban').value = 'ES6200810602620003333338';
+            document.getElementById('creditorIban').value = 'ES2640000418401234567599';
+            document.getElementById('creditorName').value = 'Nombre Beneficiario';
+            document.getElementById('creditorAgent').value = 'XXXLESMMXXX';
+            document.getElementById('remittanceInfo').value = 'Concepto';
+            document.getElementById('streetName').value = 'Ejemplo de Calle';
+            document.getElementById('buildingNumber').value = '5';
+            document.getElementById('townName').value = 'Cordoba';
+            document.getElementById('postCode').value = '14100';
+        }
+
+        function createPaymentTest(accessToken, paymentData = null) {
+            const paymentBtn = document.getElementById('paymentBtn');
+            paymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando pago...';
+            paymentBtn.disabled = true;
+
+            fetch('/api/payment/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ access_token: accessToken, payment_data: paymentData }) })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) { showPaymentCreatedState(data.data, accessToken); } else { showPaymentErrorState(data.error); }
+                })
+                .catch(error => showPaymentErrorState('Error de conexión: ' + error.message));
+        }
+
+        function checkPaymentStatus(accessToken, paymentId) {
+            const statusBtn = document.getElementById('statusBtn') || document.getElementById('refreshStatusBtn');
+            statusBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+            statusBtn.disabled = true;
+
+            fetch('/api/payment/status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ access_token: accessToken, payment_id: paymentId }) })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) { showPaymentStatusState(data.data, accessToken, paymentId); } else { showPaymentErrorState(data.error); }
+                })
+                .catch(error => showPaymentErrorState('Error de conexión: ' + error.message));
+        }
+
+        function getTokenFromCode(code) {
+            fetch('/api/token', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ redirect_url: window.location.href }) })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) { showSuccessState(data.data); } else { showErrorState(data.error); }
+                })
+                .catch(error => showErrorState('Error de conexión: ' + error.message));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            checkForCodeInURL();
+            const loginBtn = document.getElementById('loginBtn');
+            // 只有当登录按钮存在时（即没有code参数重定向）才添加事件监听
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function () {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
+                    this.disabled = true;
+
+                    fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, redirect: 'manual' })
+                        .then(response => {
+                            if (response.type === 'opaqueredirect') {
+                                // 在 opaqueridrect 类型下，我们无法直接获取 Location 头，但可以假定重定向正在发生
+                                // 浏览器会自动处理，我们不需要做任何事情
+                                return;
+                            }
+                            if (response.status === 200) {
+                                return response.json();
+                            }
+                            return response.text().then(text => { throw new Error(text) });
+                        })
+                        .then(data => {
+                            if (data && data.redirect_url) {
+                                window.location.href = data.redirect_url;
+                            } else if (!data) {
+                                // Opaque redirect case, do nothing.
+                            }
+                            else {
+                                throw new Error(data.error || 'Respuesta inesperada del servidor.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al iniciar sesión: ' + error.message);
+                            this.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                            this.disabled = false;
+                        });
+                });
+            }
         });
     </script>
 </body>
+
 </html>

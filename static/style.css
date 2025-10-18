@@ -1,37 +1,291 @@
-/* 全局样式 */
-* {
+/* ==========================================================================
+   1. 设计规范 (Design Tokens) & 全局设置
+   ========================================================================== */
+
+:root {
+
+   
+
+    /* 字体 */
+    --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hirazuka Sans GB', 'Microsoft YaHei', sans-serif;
+    --font-family-code: 'Courier New', monospace;
+
+    /* 尺寸与间距 (Spacing & Sizing) */
+    --spacing-unit: 8px;
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 16px;
+    --border-radius-pill: 50px; /* 用于胶囊按钮 */
+
+    /* 阴影 (Shadows) */
+    --shadow-base: 0 4px 16px rgba(0, 168, 255, 0.1);
+    --shadow-hover: 0 8px 24px rgba(0, 168, 255, 0.3);
+    --shadow-inset: inset 0 2px 4px rgba(0, 168, 255, 0.1);
+    
+    /* 过渡效果 */
+    --transition-base: all 0.3s ease-out;
+}
+
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-family-base);
     line-height: 1.6;
-    color: #333;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--color-text-base);
+    background: var(--gradient-primary);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: calc(var(--spacing-unit) * 2);
 }
 
-/* 登录容器 */
-.login-container {
+/* ==========================================================================
+   2. 布局容器 (Layout Containers)
+   ========================================================================== */
+
+.page-container {
     width: 100%;
-    max-width: 400px;
-    padding: 20px;
+    max-width: 500px;
 }
 
-.login-box {
-    background: white;
-    border-radius: 20px;
-    padding: 3rem 2rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+/* ==========================================================================
+   3. 通用组件 (Reusable Components)
+   ========================================================================== */
+
+/* ------------------- Card 卡片 ------------------- */
+.card {
+    background: var(--color-surface-base);
+    border-radius: var(--border-radius-lg);
+    padding: calc(var(--spacing-unit) * 5) calc(var(--spacing-unit) * 4);
+    box-shadow: 0 8px 32px rgba(0, 168, 255, 0.15);
     text-align: center;
     animation: slideUp 0.6s ease-out;
 }
 
+.card__details {
+    background: var(--color-surface-soft);
+    border-radius: var(--border-radius-md);
+    padding: calc(var(--spacing-unit) * 2);
+    box-shadow: var(--shadow-base);
+    text-align: left;
+}
+
+.card__details p {
+    margin-bottom: var(--spacing-unit);
+    color: var(--color-text-secondary);
+}
+.card__details p:last-child {
+    margin-bottom: 0;
+}
+.card__details strong {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* ------------------- Button 按钮 ------------------- */
+.btn {
+    padding: 14px 40px;
+    border: none;
+    border-radius: var(--border-radius-pill);
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-unit);
+    transition: var(--transition-base);
+    cursor: pointer;
+    min-width: 200px;
+}
+
+.btn--primary {
+    background: var(--gradient-primary);
+    color: var(--color-text-on-primary);
+    box-shadow: var(--shadow-base);
+}
+.btn--primary:hover {
+    background: var(--gradient-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.btn--secondary {
+    background: var(--color-surface-base);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+}
+.btn--secondary:hover {
+    background: var(--color-surface-input);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+.btn:disabled {
+    background: var(--color-disabled);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    color: var(--color-text-on-primary);
+    border-color: transparent;
+}
+
+/* ------------------- Form 表单 ------------------- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-unit);
+    font-size: 0.9rem;
+}
+
+.form-control {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius-sm);
+    font-size: 1rem;
+    transition: var(--transition-base);
+    background: var(--color-surface-base);
+    color: var(--color-text-base);
+}
+.form-control:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 168, 255, 0.2);
+}
+.form-control.is-invalid {
+    border-color: var(--color-error);
+}
+.form-control.is-valid {
+    border-color: var(--color-success);
+}
+
+.form-row {
+    display: flex;
+    gap: calc(var(--spacing-unit) * 2);
+    margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--spacing-unit);
+    justify-content: center;
+    margin-top: calc(var(--spacing-unit) * 3);
+    flex-wrap: wrap;
+}
+
+/* ------------------- Indicators 指示器 ------------------- */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--color-surface-input);
+    border-top: 4px solid var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+.icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-unit);
+    display: block;
+    color: var(--color-primary);
+}
+.icon--success {
+    color: var(--color-success);
+    animation: checkmark 0.6s ease-in-out;
+}
+.icon--error {
+    color: var(--color-error);
+    animation: shake 0.5s ease-in-out;
+}
+
+
+/* ==========================================================================
+   4. 特定页面/模块样式 (Page/Module Specific Styles)
+   ========================================================================== */
+
+/* ------------------- 登录模块 ------------------- */
+.login-header {
+    margin-bottom: calc(var(--spacing-unit) * 4);
+}
+.login-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-unit);
+}
+.login-header p {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+}
+
+/* ------------------- 信息展示模块 ------------------- */
+.info-section {
+    margin: calc(var(--spacing-unit) * 3) 0;
+}
+.info-section__title {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-unit);
+    text-align: center;
+    font-size: 1.3rem;
+}
+.info-section__textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-family-code);
+    font-size: 0.9rem;
+    background: var(--color-surface-input);
+    color: var(--color-text-base);
+    resize: vertical;
+    margin-bottom: var(--spacing-unit);
+    box-shadow: var(--shadow-inset);
+}
+.info-section--error .card__details {
+    background: #fff5f5;
+    color: var(--color-text-base);
+    box-shadow: 0 4px 16px rgba(255, 0, 0, 0.1);
+}
+
+/* ------------------- SCA 授权模块 ------------------- */
+.sca-section {
+    margin: calc(var(--spacing-unit) * 3) 0;
+    text-align: center;
+    padding: calc(var(--spacing-unit) * 2);
+    background: #fff8e1;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 4px 16px rgba(255, 193, 7, 0.1);
+}
+.sca-section h3 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-unit);
+}
+.sca-section p {
+    color: var(--color-text-secondary);
+    margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+/* ==========================================================================
+   5. 动画效果 (Animations)
+   ========================================================================== */
 @keyframes slideUp {
     from {
         opacity: 0;
@@ -43,201 +297,57 @@ body {
     }
 }
 
-/* 登录头部 */
-.login-header {
-    margin-bottom: 2.5rem;
-}
-
-.login-header i {
-    font-size: 3rem;
-    color: #667eea;
-    margin-bottom: 1rem;
-    display: block;
-}
-
-.login-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.login-header p {
-    color: #666;
-    font-size: 1.1rem;
-}
-
-/* 登录按钮 */
-.btn {
-    padding: 15px 40px;
-    border: none;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    min-width: 200px;
-}
-
-.btn-login {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-}
-
-.btn-login:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-}
-
-.btn-login:active {
-    transform: translateY(-1px);
-}
-
-.btn-login:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.btn-login i {
-    font-size: 1.1rem;
-}
-
-/* 响应式设计 */
-@media (max-width: 480px) {
-    .login-container {
-        padding: 15px;
-    }
-    
-    .login-box {
-        padding: 2rem 1.5rem;
-    }
-    
-    .login-header h1 {
-        font-size: 2rem;
-    }
-    
-    .login-header i {
-        font-size: 2.5rem;
-    }
-    
-    .btn {
-        padding: 12px 30px;
-        font-size: 1rem;
-        min-width: 180px;
-    }
-}
-
-/* Token信息样式 */
-.token-info {
-    margin: 2rem 0;
-    text-align: left;
-}
-
-.token-info h3 {
-    color: #333;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.token-details {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 1.5rem;
-    border: 1px solid #e9ecef;
-}
-
-.token-details p {
-    margin-bottom: 1rem;
-    color: #555;
-}
-
-.token-details strong {
-    color: #333;
-}
-
-.token-text {
-    width: 100%;
-    min-height: 80px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    background: #fff;
-    resize: vertical;
-    margin-bottom: 1rem;
-}
-
-/* 处理状态样式 */
-.processing-indicator {
-    margin: 2rem 0;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* 错误信息样式 */
-.error-info {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: #ffe6e6;
-    border: 1px solid #ffcccc;
-    border-radius: 10px;
-    color: #d32f2f;
-}
-
-.error-info p {
-    margin: 0;
-    text-align: center;
-}
-
-/* 成功状态图标动画 */
-.fa-check-circle {
-    animation: checkmark 0.6s ease-in-out;
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 @keyframes checkmark {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-    50% {
-        transform: scale(1.2);
-        opacity: 0.8;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-/* 错误状态图标动画 */
-.fa-exclamation-triangle {
-    animation: shake 0.5s ease-in-out;
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
+}
+
+/* ==========================================================================
+   6. 响应式设计 (Responsive Design)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0; 
+    }
+    .form-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-actions .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: var(--spacing-unit);
+    }
+    .card {
+        padding: calc(var(--spacing-unit) * 3) calc(var(--spacing-unit) * 2);
+    }
+    .login-header h1 {
+        font-size: 2rem;
+    }
+    .icon {
+        font-size: 2.5rem;
+    }
+    .btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+        min-width: 180px;
+    }
 }
