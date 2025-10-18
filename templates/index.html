@@ -10,147 +10,623 @@
 </head>
 
 <body>
-    <div class="modal-overlay" id="modalOverlay"></div>
-
-    <div class="modal-overlay-container" id="createGoalModalContainer">
-        <div class="create-goal-modal">
-            <div class="modal-header">
-                <h3>Crear Nueva Meta</h3>
-                <div class="modal-header-actions">
-                    <button class="ai-suggest-btn" id="aiSuggestBtn" title="Obtener sugerencias de AI">
-                        <i class="fas fa-magic"></i> AI Sugerencias
-                    </button>
-                    <button class="close-modal-btn" id="closeGoalModalBtn" aria-label="Cerrar modal">
-                        <i class="fas fa-times"></i>
-                    </button>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Sabadell</h1>
                 </div>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="goalTitle">Título de la meta</label>
-                    <input type="text" id="goalTitle" placeholder="Ej: Fondo de emergencia" maxlength="50">
-                </div>
-                <div class="form-group">
-                    <label for="goalDescription">Descripción</label>
-                    <textarea id="goalDescription" placeholder="Describe tu meta..." rows="3"
-                        maxlength="200"></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="goalTarget">Meta (€)</label>
-                        <input type="number" id="goalTarget" placeholder="0" min="1" step="0.01">
+                <div class="header-actions">
+                    <div class="language-selector">
+                        <button class="lang-btn active" data-lang="es">ES</button>
+                        <button class="lang-btn" data-lang="eu">EU</button>
                     </div>
-                    <div class="form-group">
-                        <label for="goalCurrent">Ahorrado actual (€)</label>
-                        <input type="number" id="goalCurrent" placeholder="0" min="0" step="0.01">
+                    <div class="user-info">
+                        <div class="name" data-i18n="user-name">Usuario Demo</div>
+                        <div class="account" id="accountNumber">Cargando...</div>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="goalDeadline">Plazo</label>
-                        <select id="goalDeadline">
-                            <option value="1 mes">1 mes</option>
-                            <option value="3 meses">3 meses</option>
-                            <option value="6 meses" selected>6 meses</option>
-                            <option value="1 año">1 año</option>
-                            <option value="2 años">2 años</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="goalPriority">Prioridad</label>
-                        <select id="goalPriority">
-                            <option value="high">🔴 Alta</option>
-                            <option value="medium" selected>🟡 Media</option>
-                            <option value="low">🟢 Baja</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="goalStrategy">Estrategia</label>
-                    <textarea id="goalStrategy" placeholder="¿Cómo planeas alcanzar esta meta?" rows="2"
-                        maxlength="150"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="cancel-btn" id="cancelGoalBtn">Cancelar</button>
-                <button class="create-btn" id="createGoalSubmitBtn">Crear Meta</button>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="container" id="container">
-        <header class="header">
-            <div class="header-left">
-                <div class="header-icon"><i class="fas fa-target"></i></div>
-                <div>
-                    <h1>Financial Goals</h1>
+    <main class="main-content">
+        <div class="container">
+            <div id="loadingSection" class="loading-spinner">
+                <div class="spinner"></div>
+                <p style="color: var(--text-secondary); font-size: 14px;">Analizando tu perfil financiero...</p>
+            </div>
+
+            <div id="dashboardSection" style="display: none;">
+                <div class="period-badge" id="periodInfo">
+                    <i class="fas fa-calendar" style="font-size: 12px;"></i>
+                    <span>Cargando período...</span>
                 </div>
-            </div>
-            <div class="header-actions">
-                <div class="header-status" id="headerStatus">Cargando...</div>
-            </div>
-        </header>
 
-        <main class="content">
-            <aside class="sidebar" id="sidebar">
-                <section class="sidebar-section">
-                    <h2 class="sidebar-title">Resumen Financiero</h2>
-                    <div class="stat-card" data-action="showIncome">
-                        <div class="stat-label">Ingresos</div>
-                        <div class="stat-value positive" id="incomeStat">+0€</div>
-                        <div class="stat-action-link">Ver desglose</div>
-                    </div>
-                    <div class="stat-card" data-action="showExpenses">
-                        <div class="stat-label">Gastos</div>
-                        <div class="stat-value negative" id="expensesStat">−0€</div>
-                        <div class="stat-action-link">Ver desglose</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="balance-label">Balance Actual</div>
+                        <div class="stat-value positive" id="balanceValue">0€</div>
+                        <div class="stat-subtext" data-i18n="balance-subtext">Saldo disponible</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Balance</div>
-                        <div class="stat-value" id="balanceStat">0€</div>
+                        <div class="stat-label" data-i18n="income-label">Ingresos</div>
+                        <div class="stat-value positive" id="incomeValue">0€</div>
+                        <div class="stat-subtext" id="incomeCount">0 transacciones</div>
                     </div>
-                </section>
-
-                <section class="sidebar-section goals-section">
-                    <h2 class="sidebar-title">Tus Metas</h2>
-                    <button class="create-goal-btn" id="createGoalBtn">
-                        <i class="fas fa-plus"></i>
-                        Nueva Meta
-                    </button>
-                    <div id="goalsList"></div>
-                </section>
-            </aside>
-
-            <div class="chat-panel">
-                <div class="chat-header">
-                    <div class="chat-title">Chat con AI</div>
-                    <button class="clear-chat-btn" id="clearChatBtn" title="Limpiar historial de chat">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
-                <div class="messages-container" id="messagesContainer">
-                    <!-- Los mensajes se insertarán aquí dinámicamente -->
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="expenses-label">Gastos</div>
+                        <div class="stat-value negative" id="expensesValue">0€</div>
+                        <div class="stat-subtext" id="expensesCount">0 transacciones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label" data-i18n="savings-label">Ahorro</div>
+                        <div class="stat-value" id="savingsValue">0€</div>
+                        <div class="stat-subtext" id="savingsPercent">0% de tus ingresos</div>
+                    </div>
                 </div>
 
-                <div class="input-area">
-                    <div class="input-wrapper">
-                        <label for="inputField" class="visually-hidden">Pregunta sobre tus metas...</label>
-                        <input type="text" class="input-field" id="inputField" placeholder="Pregunta sobre tus metas..."
-                            disabled>
+                <div class="insight-section">
+                    <div class="insight-header">
+                        <h3 class="insight-title" data-i18n="insight-title">Tu Situación Financiera</h3>
+                        <span class="profile-badge" id="profileBadge">Analizando...</span>
                     </div>
-                    <button class="send-btn" id="sendBtn" disabled aria-label="Enviar mensaje">
+                    <p class="insight-text" id="insightText">
+                        Cargando análisis personalizado...
+                    </p>
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title" data-i18n="expense-chart-title">Distribución de Gastos</h3>
+                            <p class="chart-subtitle">Por categoría este mes</p>
+                        </div>
+                        <div class="chart-content" id="expenseChart"></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title" data-i18n="budget-chart-title">Presupuesto 50-30-20</h3>
+                            <p class="chart-subtitle">Comparación con lo recomendado</p>
+                        </div>
+                        <div class="chart-content" id="budgetChart"></div>
+                    </div>
+                </div>
+
+                <div class="transactions-card">
+                    <h2 class="section-title" data-i18n="transactions-title">Últimas Transacciones</h2>
+                    <div class="transaction-list" id="transactionList"></div>
+                </div>
+
+                <div class="recommendations-card">
+                    <h2 class="section-title" data-i18n="recommendations-title">Recomendaciones Personalizadas</h2>
+                    <div id="recommendationsList"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Copiloto -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="copilot-modal" id="copilotModal">
+        <div class="modal-header">
+            <h2>Copiloto Financiero</h2>
+            <button class="close-modal-btn" id="closeModalBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <button class="create-goal-btn" id="createGoalBtn">
+                <i class="fas fa-plus"></i>
+                Nueva Meta
+            </button>
+
+            <h3 style="font-size: 16px; margin-bottom: 16px;">Tus Metas de Ahorro</h3>
+            <div class="goals-grid" id="goalsGrid">
+                <!-- Las metas se cargarán dinámicamente -->
+            </div>
+
+            <div class="chat-section">
+                <h3 style="font-size: 16px; margin-bottom: 16px;">Chat con AI</h3>
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Los mensajes se cargarán dinámicamente -->
+                </div>
+                <div class="chat-input-area">
+                    <input 
+                        type="text" 
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="Pregunta sobre tus metas o finanzas..."
+                    >
+                    <button class="chat-send-btn" id="chatSendBtn">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
-    <button class="open-copilot-btn" id="openCopilotBtn" aria-label="Abrir asistente financiero">
-        <i class="fas fa-comments"></i>
+    <button class="copilot-button" id="copilotBtn" style="display: none;" title="Abrir Copiloto de Ahorro">
+        <i class="fas fa-robot"></i>
     </button>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Configuración
+        const API_BASE_URL = 'http://localhost:8080/api';
+        const API_KEY_LATXA = "SabadellHackathon2025";
+        const MODEL_URL_LATXA = "http://hackathon.hitz.eus/v1/chat/completions";
+
+        // Estado global
+        let financialAnalysis = null;
+        let userGoals = [];
+        let chatHistory = [];
+
+        // Traducciones
+        const translations = {
+            es: {
+                "user-name": "Usuario Demo",
+                "balance-label": "Balance Actual",
+                "balance-subtext": "Saldo disponible",
+                "income-label": "Ingresos",
+                "expenses-label": "Gastos",
+                "savings-label": "Ahorro",
+                "insight-title": "Tu Situación Financiera",
+                "expense-chart-title": "Distribución de Gastos",
+                "budget-chart-title": "Presupuesto 50-30-20",
+                "transactions-title": "Últimas Transacciones",
+                "recommendations-title": "Recomendaciones Personalizadas"
+            },
+            eu: {}
+        };
+
+        let currentLang = 'es';
+        let translatedContent = {};
+
+        // Datos mock del banco
+        const mockBankData = {
+            "account": {"iban": "ES6200810602620003333338", "currency": "EUR", "balance": "3847.25"},
+            "transactions": {"booked": [
+                {"transactionId": "TXN001", "bookingDate": "2025-01-01", "transactionAmount": {"currency": "EUR", "amount": "2500.00"}, "remittanceInformationUnstructured": "Salario mensual"},
+                {"transactionId": "TXN002", "bookingDate": "2025-01-02", "transactionAmount": {"currency": "EUR", "amount": "-2.40"}, "remittanceInformationUnstructured": "Comisión bancaria"},
+                {"transactionId": "TXN003", "bookingDate": "2025-01-05", "transactionAmount": {"currency": "EUR", "amount": "-78.50"}, "creditorName": "Carrefour", "remittanceInformationUnstructured": "Supermercado"},
+                {"transactionId": "TXN004", "bookingDate": "2025-01-08", "transactionAmount": {"currency": "EUR", "amount": "-25.00"}, "creditorName": "La Barba Peluquería", "remittanceInformationUnstructured": "Servicio"},
+                {"transactionId": "TXN005", "bookingDate": "2025-01-10", "transactionAmount": {"currency": "EUR", "amount": "-55.00"}, "creditorName": "Restaurante El Chef", "remittanceInformationUnstructured": "Restaurante"},
+                {"transactionId": "TXN006", "bookingDate": "2025-01-12", "transactionAmount": {"currency": "EUR", "amount": "-60.00"}, "creditorName": "Repsol", "remittanceInformationUnstructured": "Combustible"},
+                {"transactionId": "TXN007", "bookingDate": "2025-01-15", "transactionAmount": {"currency": "EUR", "amount": "-12.99"}, "creditorName": "Netflix", "remittanceInformationUnstructured": "Suscripción"},
+                {"transactionId": "TXN008", "bookingDate": "2025-01-18", "transactionAmount": {"currency": "EUR", "amount": "-89.99"}, "creditorName": "Decathlon", "remittanceInformationUnstructured": "Ropa deportiva"},
+                {"transactionId": "TXN009", "bookingDate": "2025-01-20", "transactionAmount": {"currency": "EUR", "amount": "-35.00"}, "creditorName": "Vodafone", "remittanceInformationUnstructured": "Factura teléfono"},
+                {"transactionId": "TXN010", "bookingDate": "2025-01-22", "transactionAmount": {"currency": "EUR", "amount": "-42.00"}, "creditorName": "Cines Yelmo", "remittanceInformationUnstructured": "Cine"},
+                {"transactionId": "TXN011", "bookingDate": "2025-01-25", "transactionAmount": {"currency": "EUR", "amount": "-65.30"}, "creditorName": "Mercadona", "remittanceInformationUnstructured": "Supermercado"},
+                {"transactionId": "TXN012", "bookingDate": "2025-01-28", "transactionAmount": {"currency": "EUR", "amount": "-22.50"}, "creditorName": "Café Central", "remittanceInformationUnstructured": "Café"}
+            ]}
+        };
+
+        // Clasificación por keywords
+        const KEYWORD_RULES = {
+            "Alimentación": ["carrefour", "mercadona", "lidl", "super", "burger", "sushi", "restaurante"],
+            "Transporte": ["repsol", "cepsa", "gasolina", "taxi", "uber"],
+            "Servicios": ["netflix", "spotify", "hbo", "vodafone", "movistar", "peluquería"],
+            "Compras": ["decathlon", "zara", "ropa", "tienda"],
+            "Ocio": ["cine", "yelmo", "bar", "café", "coffee"],
+            "Banca": ["comisión"]
+        };
+
+        function classifyTransaction(description) {
+            const desc = description.toLowerCase();
+            for (const [category, keywords] of Object.entries(KEYWORD_RULES)) {
+                for (const keyword of keywords) {
+                    if (desc.includes(keyword)) return category;
+                }
+            }
+            return "Otros";
+        }
+
+        function getTransactionIcon(category) {
+            const icons = {
+                "Alimentación": "utensils", "Transporte": "car", "Servicios": "cog",
+                "Compras": "shopping-bag", "Ocio": "film", "Banca": "university",
+                "Ingresos": "arrow-down"
+            };
+            return icons[category] || 'circle';
+        }
+
+        function analyzeBankData(bankData) {
+            const transactions = bankData.transactions.booked;
+            const initialBalance = parseFloat(bankData.account.balance);
+            let totalIncome = 0, totalExpenses = 0;
+            const categoryTotals = {}, classifiedTransactions = [];
+
+            transactions.forEach(txn => {
+                const amount = parseFloat(txn.transactionAmount.amount);
+                const description = txn.creditorName || txn.debtorName || txn.remittanceInformationUnstructured;
+                const category = amount >= 0 ? "Ingresos" : classifyTransaction(description);
+                
+                classifiedTransactions.push({id: txn.transactionId, date: txn.bookingDate, description, amount, category});
+
+                if (amount >= 0) totalIncome += amount;
+                else {
+                    totalExpenses += Math.abs(amount);
+                    categoryTotals[category] = (categoryTotals[category] || 0) + Math.abs(amount);
+                }
+            });
+
+            const savingsAmount = totalIncome - totalExpenses;
+            const savingsPercent = totalIncome > 0 ? (savingsAmount / totalIncome) * 100 : 0;
+
+            let profileType = "Equilibrado";
+            if (savingsPercent > 25) profileType = "Ahorrador constante";
+            else if (savingsPercent > 20) profileType = "Ahorrador";
+            else if (savingsPercent > 10) profileType = "Equilibrado prudente";
+            else if (savingsPercent < 5) profileType = "Impulsivo";
+
+            const idealEssentials = totalIncome * 0.50;
+            const idealDiscretionary = totalIncome * 0.30;
+            const idealSavings = totalIncome * 0.20;
+            const actualEssentials = (categoryTotals["Alimentación"] || 0) + (categoryTotals["Servicios"] || 0);
+            const actualDiscretionary = (categoryTotals["Ocio"] || 0) + (categoryTotals["Compras"] || 0);
+
+            const dates = transactions.map(t => t.bookingDate).sort();
+            const period = dates.length > 0 ? `${formatDate(dates[0])} - ${formatDate(dates[dates.length - 1])}` : "N/A";
+
+            return {
+                totalIncome, totalExpenses, balance: initialBalance, savingsAmount, savingsPercent,
+                profileType, categoryTotals, classifiedTransactions, period, iban: bankData.account.iban,
+                idealEssentials, idealDiscretionary, idealSavings, actualEssentials, actualDiscretionary
+            };
+        }
+
+        function generateInsightText(analysis) {
+            const { totalIncome, totalExpenses, savingsAmount, savingsPercent, profileType } = analysis;
+            let insight = `Durante este período has recibido ${totalIncome.toFixed(2)}€ y has gastado ${totalExpenses.toFixed(2)}€. `;
+            
+            if (savingsAmount > 0) {
+                insight += `Has ahorrado ${savingsAmount.toFixed(2)}€, lo que representa un ${savingsPercent.toFixed(1)}% de ahorro. `;
+            } else {
+                insight += `Has gastado más de lo que ingresaste. `;
+            }
+
+            const profileMessages = {
+                "Ahorrador constante": "Tu disciplina de ahorro es excepcional. Considera invertir parte de tus ahorros.",
+                "Ahorrador": "Tienes buenos hábitos de ahorro. Sigue así y optimiza gastos discrecionales.",
+                "Equilibrado prudente": "Buen equilibrio entre gastos y ahorros. Intenta aumentar tu tasa de ahorro gradualmente.",
+                "Impulsivo": "Tus gastos son variables. Crea un presupuesto mensual y reduce gastos innecesarios.",
+                "Equilibrado": "Tienes margen para mejorar. Pequeños ajustes pueden hacer gran diferencia."
+            };
+
+            return insight + profileMessages[profileType];
+        }
+
+        function generateRecommendations(analysis) {
+            const recommendations = [];
+            const { categoryTotals, idealDiscretionary, actualDiscretionary, idealEssentials, actualEssentials, totalIncome } = analysis;
+
+            if (actualDiscretionary > idealDiscretionary) {
+                const diff = (actualDiscretionary - idealDiscretionary).toFixed(2);
+                recommendations.push({
+                    title: "Reduce gastos de ocio",
+                    text: `Estás gastando ${diff}€ más de lo recomendado en ocio. Ajusta a ${idealDiscretionary.toFixed(2)}€ mensuales.`
+                });
+            }
+
+            if (actualEssentials > idealEssentials) {
+                const diff = (actualEssentials - idealEssentials).toFixed(2);
+                recommendations.push({
+                    title: "Optimiza gastos esenciales",
+                    text: `Puedes ahorrar ${diff}€ negociando servicios o comprando más inteligente.`
+                });
+            }
+
+            const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+            if (topCategory) {
+                const reduction = (topCategory[1] * 0.15).toFixed(2);
+                recommendations.push({
+                    title: `Controla gastos en ${topCategory[0]}`,
+                    text: `${topCategory[0]} es tu mayor gasto (${topCategory[1].toFixed(2)}€). Reduciendo 15% ahorrarías ${reduction}€.`
+                });
+            }
+
+            recommendations.push({
+                title: "Automatiza tu ahorro",
+                text: `Configura transferencia automática de ${(totalIncome * 0.20).toFixed(2)}€ (20%) el día de cobro.`
+            });
+
+            return recommendations;
+        }
+
+        function renderDashboard(analysis) {
+            document.getElementById('accountNumber').textContent = `**** ${analysis.iban.slice(-4)}`;
+            document.getElementById('periodInfo').innerHTML = `<i class="fas fa-calendar" style="font-size: 12px;"></i><span>${analysis.period}</span>`;
+            document.getElementById('balanceValue').textContent = `${analysis.balance.toFixed(2)}€`;
+            document.getElementById('incomeValue').textContent = `${analysis.totalIncome.toFixed(2)}€`;
+            document.getElementById('expensesValue').textContent = `${analysis.totalExpenses.toFixed(2)}€`;
+            document.getElementById('savingsValue').textContent = `${analysis.savingsAmount.toFixed(2)}€`;
+            document.getElementById('savingsPercent').textContent = `${analysis.savingsPercent.toFixed(1)}% de tus ingresos`;
+
+            const savingsEl = document.getElementById('savingsValue');
+            savingsEl.classList.toggle('positive', analysis.savingsAmount > 0);
+            savingsEl.classList.toggle('negative', analysis.savingsAmount <= 0);
+
+            const incomeCount = analysis.classifiedTransactions.filter(t => t.amount >= 0).length;
+            const expenseCount = analysis.classifiedTransactions.filter(t => t.amount < 0).length;
+            document.getElementById('incomeCount').textContent = `${incomeCount} transacción${incomeCount !== 1 ? 'es' : ''}`;
+            document.getElementById('expensesCount').textContent = `${expenseCount} transacción${expenseCount !== 1 ? 'es' : ''}`;
+
+            document.getElementById('insightText').textContent = generateInsightText(analysis);
+            document.getElementById('profileBadge').textContent = analysis.profileType;
+
+            // Gráfico de gastos
+            const expenseChart = document.getElementById('expenseChart');
+            const categories = Object.entries(analysis.categoryTotals).sort((a, b) => b[1] - a[1]);
+            const total = categories.reduce((sum, [_, amount]) => sum + amount, 0);
+            const colors = ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'];
+            
+            expenseChart.innerHTML = categories.map(([cat, amount], i) => {
+                const percent = ((amount / total) * 100);
+                return `
+                    <div class="category-item">
+                        <div class="category-header">
+                            <span class="category-name">${cat}</span>
+                            <div class="category-amount">
+                                <span class="category-value">${amount.toFixed(2)}€</span>
+                                <span class="category-percent">${percent.toFixed(1)}%</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percent}%; background: ${colors[i % colors.length]};"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Gráfico presupuesto
+            const budgetChart = document.getElementById('budgetChart');
+            const budgetCategories = [
+                { name: 'Necesidades', target: '50%', ideal: analysis.idealEssentials, actual: analysis.actualEssentials, color: '#3b82f6' },
+                { name: 'Ocio', target: '30%', ideal: analysis.idealDiscretionary, actual: analysis.actualDiscretionary, color: '#8b5cf6' },
+                { name: 'Ahorro', target: '20%', ideal: analysis.idealSavings, actual: analysis.savingsAmount, color: '#10b981' }
+            ];
+
+            const maxValue = Math.max(...budgetCategories.flatMap(c => [c.ideal, c.actual])) * 1.15;
+
+            budgetChart.innerHTML = budgetCategories.map(cat => {
+                const idealPercent = (cat.ideal / maxValue) * 100;
+                const actualPercent = (cat.actual / maxValue) * 100;
+                const difference = cat.actual - cat.ideal;
+                const diffClass = difference > 0 ? 'negative' : difference < 0 ? 'positive' : '';
+                const diffText = difference > 0 ? `+${difference.toFixed(0)}€` : `${difference.toFixed(0)}€`;
+                
+                return `
+                    <div class="budget-comparison">
+                        <div class="budget-label-group">
+                            <div class="budget-name-group">
+                                <span class="budget-name">${cat.name}</span>
+                                <span class="budget-target">${cat.target}</span>
+                            </div>
+                            <span class="budget-diff ${diffClass}">${diffText}</span>
+                        </div>
+                        <div class="budget-bars">
+                            <div class="budget-bar-row">
+                                <span class="budget-bar-label">Recomendado</span>
+                                <div class="budget-bar">
+                                    <div class="budget-bar-fill ideal" style="width: ${idealPercent}%; background: ${cat.color};"></div>
+                                </div>
+                                <span class="budget-bar-value">${cat.ideal.toFixed(0)}€</span>
+                            </div>
+                            <div class="budget-bar-row">
+                                <span class="budget-bar-label">Tu gasto</span>
+                                <div class="budget-bar">
+                                    <div class="budget-bar-fill" style="width: ${actualPercent}%; background: ${cat.color};"></div>
+                                </div>
+                                <span class="budget-bar-value">${cat.actual.toFixed(0)}€</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Transacciones
+            const transactionList = document.getElementById('transactionList');
+            transactionList.innerHTML = analysis.classifiedTransactions
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(txn => {
+                    const icon = getTransactionIcon(txn.category);
+                    const amountClass = txn.amount >= 0 ? 'income' : 'expense';
+                    const amountSign = txn.amount >= 0 ? '+' : '';
+                    
+                    return `
+                        <div class="transaction-item">
+                            <div class="transaction-left">
+                                <div class="transaction-icon"><i class="fas fa-${icon}"></i></div>
+                                <div class="transaction-details">
+                                    <div class="name">${txn.description}</div>
+                                    <div class="category">${txn.category}</div>
+                                </div>
+                            </div>
+                            <div class="transaction-right">
+                                <div class="transaction-amount ${amountClass}">${amountSign}${txn.amount.toFixed(2)}€</div>
+                                <div class="transaction-date">${formatDate(txn.date)}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            // Recomendaciones
+            const recommendations = generateRecommendations(analysis);
+            document.getElementById('recommendationsList').innerHTML = recommendations.map(rec => `
+                <div class="recommendation-item">
+                    <div class="recommendation-title">${rec.title}</div>
+                    <div class="recommendation-text">${rec.text}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('copilotBtn').style.display = 'flex';
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+        }
+
+        // Sistema de metas
+        function renderGoals() {
+            const goalsGrid = document.getElementById('goalsGrid');
+            if (userGoals.length === 0) {
+                goalsGrid.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 40px;">No tienes metas aún. ¡Crea tu primera meta!</p>';
+                return;
+            }
+
+            goalsGrid.innerHTML = userGoals.map(goal => {
+                const progress = (goal.current / goal.target) * 100;
+                const priorityEmoji = goal.priority === 'high' ? '🔴' : goal.priority === 'medium' ? '🟡' : '🟢';
+                
+                return `
+                    <div class="goal-card" data-goal-id="${goal.id}">
+                        <div class="goal-card-header">
+                            <div class="goal-title">${goal.title}</div>
+                            <div class="goal-priority">${priorityEmoji}</div>
+                        </div>
+                        <div class="goal-description">${goal.description}</div>
+                        <div class="goal-progress">
+                            <div class="goal-amounts">
+                                <span>${goal.current.toFixed(2)}€</span>
+                                <span>${goal.target.toFixed(2)}€</span>
+                            </div>
+                            <div class="goal-progress-bar">
+                                <div class="goal-progress-fill" style="width: ${Math.min(progress, 100)}%"></div>
+                            </div>
+                        </div>
+                        <div class="goal-deadline">Plazo: ${goal.deadline}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addChatMessage(text, isUser = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            
+            const messageHTML = `
+                <div class="chat-message">
+                    <div class="message-avatar ${isUser ? 'user' : 'ai'}">
+                        <i class="fas fa-${isUser ? 'user' : 'robot'}"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">${text}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            addChatMessage(question, true);
+            input.value = '';
+            
+            const sendBtn = document.getElementById('chatSendBtn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question,
+                        goal: userGoals.length > 0 ? userGoals[0] : null
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    addChatMessage(data.data.response, false);
+                } else {
+                    addChatMessage('Lo siento, hubo un error. Intenta de nuevo.', false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addChatMessage('No pude conectar con el servidor. Verifica tu conexión.', false);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('copilotBtn').addEventListener('click', () => {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('copilotModal').classList.add('active');
+        });
+
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById('copilotModal').classList.remove('active');
+        });
+
+        document.getElementById('modalOverlay').addEventListener('click', () => {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById('copilotModal').classList.remove('active');
+        });
+
+        document.getElementById('createGoalBtn').addEventListener('click', () => {
+            const title = prompt('Título de la meta:');
+            if (!title) return;
+            
+            const target = parseFloat(prompt('Cantidad objetivo (€):'));
+            const current = parseFloat(prompt('Cantidad actual (€):')) || 0;
+            
+            const newGoal = {
+                id: Date.now(),
+                title: title,
+                description: `Meta de ahorro para ${title}`,
+                target: target,
+                current: current,
+                deadline: '6 meses',
+                priority: 'medium'
+            };
+            
+            userGoals.push(newGoal);
+            renderGoals();
+        });
+
+        document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
+        
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Funcionalidad de traducción (simplificada)
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Inicialización
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                financialAnalysis = analyzeBankData(mockBankData);
+                window.originalInsightText = generateInsightText(financialAnalysis);
+                renderDashboard(financialAnalysis);
+                renderGoals();
+                
+                // Mensaje de bienvenida en el chat
+                addChatMessage('¡Hola! Soy tu asistente financiero. Pregúntame sobre tus metas o finanzas.', false);
+            }, 1500);
+        });
+    </script>
 </body>
 
 </html>
