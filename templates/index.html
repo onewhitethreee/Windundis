@@ -614,37 +614,6 @@
             elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
         }
 
-<<<<<<< HEAD
-                    fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, redirect: 'manual' })
-                        .then(response => {
-                            if (response.type === 'opaqueredirect') {
-                                // 在 opaqueridrect 类型下，我们无法直接获取 Location 头，但可以假定重定向正在发生
-                                // 浏览器会自动处理，我们不需要做任何事情
-                                return;
-                            }
-                            if (response.status === 200) {
-                                return response.json();
-                            }
-                            return response.text().then(text => { throw new Error(text) });
-                        })
-                        .then(data => {
-                            if (data && data.redirect_url) {
-                                window.location.href = data.redirect_url;
-                            } else if (!data) {
-                                // Opaque redirect case, do nothing.
-                            }
-                            else {
-                                throw new Error(data.error || 'Respuesta inesperada del servidor.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Error al iniciar sesión: ' + error.message);
-                            this.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
-                            this.disabled = false;
-                        });
-                });
-=======
         async function handleSendMessage() {
             const userInput = elements.inputField.value.trim();
             if (!userInput) return;
@@ -704,7 +673,6 @@
         elements.inputField.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !elements.sendBtn.disabled) {
                 handleSendMessage();
->>>>>>> d7ad6a2b3a028373bde596d35dcc4207d4ec3d7c
             }
         });
 
