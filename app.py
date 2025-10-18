@@ -4,6 +4,8 @@ import json
 from flask_cors import CORS
 import sys
 import os
+os.environ['MPLCONFIGDIR'] = os.path.join(os.path.expanduser('~'), '.config', 'matplotlib')
+os.makedirs(os.environ['MPLCONFIGDIR'], exist_ok=True)
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from RedsysClient import RedsysClient
