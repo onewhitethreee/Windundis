@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windundis - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <i class="fas fa-university"></i>
+                    <h1>Windundis</h1>
+                </div>
+                <div class="user-section">
+                    <span class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        Usuario Conectado
+                    </span>
+                    <button class="btn btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="dashboard-content">
+                <!-- Welcome Section -->
+                <section class="welcome-section">
+                    <div class="welcome-card">
+                        <div class="welcome-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2>¡Bienvenido al Dashboard!</h2>
+                        <p>Has iniciado sesión exitosamente en Windundis</p>
+                        <div class="success-indicator">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Conexión segura establecida</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section class="features-section">
+                    <h3>Servicios Disponibles</h3>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <h4>Pagos</h4>
+                            <p>Gestiona tus transacciones y pagos de forma segura</p>
+                            <button class="btn btn-feature" onclick="showFeature('payments')">
+                                Acceder
+                            </button>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4>Análisis</h4>
+                            <p>Visualiza tus datos financieros y estadísticas</p>
+                            <button class="btn btn-feature" onclick="showFeature('analytics')">
+                                Acceder
+                            </button>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <h4>Configuración</h4>
+                            <p>Personaliza tu experiencia y configuración</p>
+                            <button class="btn btn-feature" onclick="showFeature('settings')">
+                                Acceder
+                            </button>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <h4>Soporte</h4>
+                            <p>Obtén ayuda y soporte técnico</p>
+                            <button class="btn btn-feature" onclick="showFeature('support')">
+                                Acceder
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Token Info Section (Hidden by default) -->
+                <section class="token-section" id="tokenSection" style="display: none;">
+                    <h3>Información de Token</h3>
+                    <div class="token-card">
+                        <div class="token-details">
+                            <div class="token-item">
+                                <label>Access Token:</label>
+                                <textarea readonly class="token-text" id="accessToken"></textarea>
+                            </div>
+                            <div class="token-item">
+                                <label>Token Type:</label>
+                                <span id="tokenType"></span>
+                            </div>
+                            <div class="token-item">
+                                <label>Expires In:</label>
+                                <span id="expiresIn"></span>
+                            </div>
+                            <div class="token-item">
+                                <label>Scope:</label>
+                                <span id="scope"></span>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="hideTokenInfo()">
+                            <i class="fas fa-eye-slash"></i>
+                            Ocultar Token
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Action Buttons -->
+                <section class="actions-section">
+                    <button class="btn btn-primary" onclick="showTokenInfo()">
+                        <i class="fas fa-key"></i>
+                        Ver Información de Token
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualizar Datos
+                    </button>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>&copy; 2024 Windundis. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <script>
+        // 从localStorage获取token信息
+        function loadTokenInfo() {
+            const tokenData = localStorage.getItem('tokenData');
+            if (tokenData) {
+                const data = JSON.parse(tokenData);
+                document.getElementById('accessToken').value = data.access_token || 'N/A';
+                document.getElementById('tokenType').textContent = data.token_type || 'N/A';
+                document.getElementById('expiresIn').textContent = data.expires_in || 'N/A';
+                document.getElementById('scope').textContent = data.scope || 'N/A';
+            }
+        }
+
+        // 显示token信息
+        function showTokenInfo() {
+            const tokenSection = document.getElementById('tokenSection');
+            tokenSection.style.display = 'block';
+            loadTokenInfo();
+        }
+
+        // 隐藏token信息
+        function hideTokenInfo() {
+            const tokenSection = document.getElementById('tokenSection');
+            tokenSection.style.display = 'none';
+        }
+
+        // 显示功能
+        function showFeature(feature) {
+            alert(`Accediendo a la funcionalidad: ${feature}`);
+            // 这里可以添加具体的功能实现
+        }
+
+        // 刷新数据
+        function refreshData() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+            btn.disabled = true;
+
+            // 模拟刷新过程
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                alert('Datos actualizados correctamente');
+            }, 2000);
+        }
+
+        // 登出功能
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                // 清除localStorage中的token信息
+                localStorage.removeItem('tokenData');
+                // 重定向到首页
+                window.location.href = '/';
+            }
+        }
+
+        // 页面加载时检查是否有token信息
+        document.addEventListener('DOMContentLoaded', function() {
+            const tokenData = localStorage.getItem('tokenData');
+            if (!tokenData) {
+                // 如果没有token信息，重定向到首页
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+</html>
