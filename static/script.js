@@ -217,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const priorityIcon = goal.priority === 'high' ? '🔴' : goal.priority === 'medium' ? '🟡' : '🟢';
             const isCompleted = progress >= 100;
             
-            // 检查是否有聊天历史
             const chatCount = state.chatHistory[goal.id] ? state.chatHistory[goal.id].length : 0;
             const chatIndicator = chatCount > 0 ? ` <span class="chat-indicator" title="${chatCount} mensajes">💬 ${chatCount}</span>` : '';
 
@@ -242,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.messagesContainer.appendChild(messageDiv);
         elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
         
-        // 保存到聊天历史
         if (saveToHistory && state.selectedGoalId) {
             if (!state.chatHistory[state.selectedGoalId]) {
                 state.chatHistory[state.selectedGoalId] = [];
@@ -253,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 timestamp: new Date().toISOString()
             });
             
-            // 保存到本地存储
             saveChatHistoryToStorage();
         }
         
@@ -261,16 +258,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function restoreChatHistory(goalId) {
-        // 清空当前聊天界面
         elements.messagesContainer.innerHTML = '';
         
-        // 如果有聊天历史，恢复它
         if (state.chatHistory[goalId] && state.chatHistory[goalId].length > 0) {
             state.chatHistory[goalId].forEach(message => {
-                addMessage(message.role, message.content, false); // 不重复保存到历史
+                addMessage(message.role, message.content, false); 
             });
         } else {
-            // 如果没有聊天历史，显示目标详情
             const goal = state.goals.find(g => g.id === goalId);
             if (goal) {
                 showGoalDetails(goal).catch(error => {
@@ -285,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
         state.selectedGoalId = goalId;
         renderGoals(); // Re-render to update the 'selected' class
         
-        // 恢复聊天历史
         restoreChatHistory(goalId);
     }
 
@@ -297,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.inputField.value = '';
         elements.sendBtn.disabled = true;
 
-        const loadingMessage = addMessage('assistant', '<div class="loading-dots"><span></span><span></span><span></span> Procesando...</div>');
+        const loadingMessage = addMessage('assistant', '<div class="loading-dots"><span></span><span></span><span></span> Procesando...</div>', false);
 
         try {
             let response;
@@ -319,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error getting AI response:', error);
             loadingMessage.remove();
-            addMessage('assistant', 'Lo siento, no pude procesar tu consulta en este momento. Por favor, inténtalo de nuevo.');
+            addMessage('assistant', 'Lo siento, no pude procesar tu consulta en este momento. Por favor, inténtalo de nuevo.', true); 
         } finally {
             elements.sendBtn.disabled = false;
             elements.inputField.focus();
@@ -342,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong>💡 Estrategia:</strong><br>${goal.strategy}
             </div>
         `;
-        addMessage('assistant', basicInfo);
+        addMessage('assistant', basicInfo, false); 
 
         try {
             const motivation = await getMotivationalMessage(goal);
@@ -351,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>💪 Mensaje Motivacional:</strong><br><br>
                     ${motivation}
                 </div>
-            `);
+            `, true); 
         } catch (error) {
             console.error('Error getting motivation:', error);
         }
@@ -409,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.goals.push(newGoal);
         closeCreateGoalModal();
         selectGoal(newGoal.id);
-        addMessage('assistant', `¡Perfecto! He creado tu nueva meta "${newGoal.title}".`);
+        addMessage('assistant', `¡Perfecto! He creado tu nueva meta "${newGoal.title}".`, true); 
     }
 
     // --- UTILITY FUNCTIONS ---
@@ -439,10 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearChatHistory(goalId = null) {
         if (goalId) {
-            // 清除特定目标的聊天历史
             delete state.chatHistory[goalId];
             if (state.selectedGoalId === goalId) {
-                // 如果清除的是当前选中的目标，显示目标详情
                 const goal = state.goals.find(g => g.id === goalId);
                 if (goal) {
                     elements.messagesContainer.innerHTML = '';
@@ -452,7 +443,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         } else {
-            // 清除所有聊天历史
             state.chatHistory = {};
             elements.messagesContainer.innerHTML = '';
             const goal = state.goals.find(g => g.id === state.selectedGoalId);
@@ -462,8 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-        renderGoals(); // 重新渲染以更新聊天指示器
-        saveChatHistoryToStorage(); // 保存到本地存储
+        renderGoals(); 
+        saveChatHistoryToStorage(); 
     }
 
     function saveChatHistoryToStorage() {
@@ -504,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     Total: ${sign}${total.toFixed(2)}€
                 </div>
             </div>
-        `);
+        `, true); 
     }
 
     // --- INITIALIZATION ---
@@ -549,7 +539,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Initializing Financial Assistant...');
         elements.openBtn.classList.add('show');
         
-        // 加载聊天历史
         loadChatHistoryFromStorage();
         
         try {
@@ -584,7 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Initialization Error:', error);
-            addMessage('assistant', 'Error al cargar los datos. Por favor, inténtalo más tarde.');
+            addMessage('assistant', 'Error al cargar los datos. Por favor, inténtalo más tarde.', false); 
         }
     }
 
