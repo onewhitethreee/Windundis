@@ -357,5 +357,60 @@ def divide_task():
     except Exception as e:
         return jsonify({"success": False, "error": f"Error dividiendo tarea: {str(e)}"}), 500
 
+@app.route('/api/ai/suggest-tasks', methods=['POST', 'OPTIONS'])
+def suggest_tasks():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data or 'description' not in data:
+            return jsonify({"success": False, "error": "Descripción requerida"}), 400
+        
+        user_description = data['description']
+        financial_situation = data.get('financial_situation', None)
+        
+        suggestions = ai_service.generate_task_suggestions(user_description, financial_situation)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "suggestions": suggestions,
+                "timestamp": str(datetime.now())
+            },
+            "message": "Sugerencias de tareas generadas exitosamente"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error generando sugerencias: {str(e)}"}), 500
+
+@app.route('/api/ai/create-smart-goal', methods=['POST', 'OPTIONS'])
+def create_smart_goal():
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data or 'goal_type' not in data or 'context' not in data:
+            return jsonify({"success": False, "error": "Tipo de meta y contexto requeridos"}), 400
+        
+        goal_type = data['goal_type']
+        user_context = data['context']
+        financial_data = data.get('financial_data', None)
+        
+        smart_goal = ai_service.create_smart_goal(goal_type, user_context, financial_data)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "goal": smart_goal,
+                "timestamp": str(datetime.now())
+            },
+            "message": "Meta inteligente creada exitosamente"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error creando meta inteligente: {str(e)}"}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, port=8080) 

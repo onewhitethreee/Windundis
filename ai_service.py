@@ -201,5 +201,104 @@ Proporciona una lista estructurada y práctica."""
         else:
             return f"Para la meta '{task}', te sugiero empezar por definir un presupuesto específico y establecer fechas límite claras."
 
+    def generate_task_suggestions(self, user_description: str, financial_situation: dict = None) -> str:
+
+        system_prompt = """Eres un asesor financiero experto especializado en crear metas financieras personalizadas.
+
+Tu tarea es analizar la descripción del usuario y generar sugerencias de tareas financieras específicas y realistas.
+
+Para cada sugerencia, incluye:
+1. Título claro y motivador
+2. Descripción detallada
+3. Meta monetaria realista
+4. Plazo sugerido
+5. Prioridad (alta/media/baja)
+6. Estrategia específica
+
+Proporciona 3-5 sugerencias variadas y útiles."""
+
+        context = ""
+        if financial_situation:
+            context = f"""
+Situación financiera actual:
+- Ingresos: {financial_situation.get('income', 'No especificado')}€
+- Gastos: {financial_situation.get('expenses', 'No especificado')}€
+- Balance: {financial_situation.get('balance', 'No especificado')}€
+"""
+
+        user_prompt = f"""Basándote en esta descripción del usuario, genera sugerencias de tareas financieras:
+
+{context}
+
+Descripción del usuario: {user_description}
+
+Proporciona sugerencias específicas y accionables."""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+        
+        response = self._make_api_request(messages, self.model_salamandra, temperature=0.7)
+        
+        if response:
+            return response
+        else:
+            return f"Basándome en tu descripción '{user_description}', te sugiero crear metas específicas como: ahorro de emergencia, reducción de gastos, o inversión a largo plazo."
+
+    def create_smart_goal(self, goal_type: str, user_context: str, financial_data: dict = None) -> dict:
+
+        system_prompt = f"""Eres un experto en planificación financiera. Crea una meta financiera específica basada en el tipo y contexto proporcionados.
+
+Tipo de meta: {goal_type}
+Contexto del usuario: {user_context}
+
+Genera una meta completa con:
+- Título motivador
+- Descripción clara
+- Meta monetaria realista
+- Plazo apropiado
+- Prioridad
+- Estrategia específica
+
+Responde en formato JSON con las siguientes claves:
+title, description, target, deadline, priority, strategy"""
+
+        context = ""
+        if financial_data:
+            context = f" Situación financiera: Ingresos {financial_data.get('income', 0)}€, Gastos {financial_data.get('expenses', 0)}€"
+
+        user_prompt = f"Crea una meta financiera para: {goal_type}. Contexto: {user_context}.{context}"
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+        
+        response = self._make_api_request(messages, self.model_salamandra, temperature=0.6)
+        
+        if response:
+            try:
+                import json
+                return json.loads(response)
+            except:
+                return {
+                    "title": f"Meta de {goal_type}",
+                    "description": response[:200] + "..." if len(response) > 200 else response,
+                    "target": 1000,
+                    "deadline": "6 meses",
+                    "priority": "medium",
+                    "strategy": "Define tu estrategia personalizada basada en tus necesidades."
+                }
+        else:
+            return {
+                "title": f"Meta de {goal_type}",
+                "description": f"Meta personalizada para {goal_type}",
+                "target": 1000,
+                "deadline": "6 meses",
+                "priority": "medium",
+                "strategy": "Define tu estrategia personalizada."
+            }
+
 
 ai_service = FinancialAIService()

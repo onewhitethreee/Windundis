@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeGoalModalBtn: document.getElementById('closeGoalModalBtn'),
         cancelGoalBtn: document.getElementById('cancelGoalBtn'),
         createGoalSubmitBtn: document.getElementById('createGoalSubmitBtn'),
+        aiSuggestBtn: document.getElementById('aiSuggestBtn'),
         goalForm: {
             title: document.getElementById('goalTitle'),
             description: document.getElementById('goalDescription'),
@@ -221,13 +222,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const chatCount = state.chatHistory[goal.id] ? state.chatHistory[goal.id].length : 0;
             const chatIndicator = chatCount > 0 ? ` <span class="chat-indicator" title="${chatCount} mensajes">💬 ${chatCount}</span>` : '';
 
-            return `
-                <div class="goal-card ${isCompleted ? 'completed' : ''} ${goal.id === state.selectedGoalId ? 'selected' : ''}" data-goal-id="${goal.id}">
-                    <div class="goal-title">${priorityIcon} ${goal.title} ${isCompleted ? ' <span style="color: #48bb78; font-size: 10px;">✓</span>' : ''}${chatIndicator}</div>
-                    <div class="goal-progress"><div class="goal-progress-bar" style="width: ${progress}%"></div></div>
-                    <div class="goal-percent">${progress.toFixed(0)}% · ${goal.current.toFixed(0)}€ / ${goal.target.toFixed(0)}€</div>
+        const subgoalsCount = goal.subgoals ? goal.subgoals.length : 0;
+        const subgoalsIndicator = subgoalsCount > 0 ? ` <span class="subgoals-indicator" title="${subgoalsCount} submetas">📋 ${subgoalsCount}</span>` : '';
+        
+        return `
+            <div class="goal-card ${isCompleted ? 'completed' : ''} ${goal.id === state.selectedGoalId ? 'selected' : ''}" data-goal-id="${goal.id}">
+                <div class="goal-title">${priorityIcon} ${goal.title} ${isCompleted ? ' <span style="color: #48bb78; font-size: 10px;">✓</span>' : ''}${chatIndicator}${subgoalsIndicator}</div>
+                <div class="goal-progress"><div class="goal-progress-bar" style="width: ${progress}%"></div></div>
+                <div class="goal-percent">${progress.toFixed(0)}% · ${goal.current.toFixed(0)}€ / ${goal.target.toFixed(0)}€</div>
+                <div class="goal-actions">
+                    <button class="add-subgoal-btn" data-goal-id="${goal.id}" title="Agregar submeta">
+                        <i class="fas fa-plus"></i> Submeta
+                    </button>
                 </div>
-            `;
+            </div>
+        `;
         }).join('');
     }
 
@@ -401,7 +410,9 @@ document.addEventListener('DOMContentLoaded', () => {
             deadline: deadline.value,
             description: description.value.trim() || `Meta personalizada: ${title.value.trim()}`,
             strategy: strategy.value.trim() || 'Define tu estrategia personalizada.',
-            priority: priority.value
+            priority: priority.value,
+            parentId: null, 
+            subgoals: [] 
         };
 
         state.goals.push(newGoal);
@@ -433,9 +444,108 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (input.includes('reiniciar') || input.includes('reset') || input.includes('restart')) {
             resetInitialization();
             return '✅ Initialization state reset. You can now reinitialize if needed.';
+        } else if (input.includes('crear meta') || input.includes('nueva meta') || input.includes('sugerir')) {
+            try {
+                showAISuggestionsModal();
+                return '🤖 Abriendo el generador de sugerencias de AI...';
+            } catch (error) {
+                console.error('Error opening AI suggestions modal:', error);
+                return '❌ Error al abrir el generador de sugerencias. Por favor, inténtalo de nuevo.';
+            }
+        } else if (input.includes('submeta') || input.includes('sub meta')) {
+            if (state.selectedGoalId) {
+                addSubgoal(state.selectedGoalId);
+                return '📋 Abriendo el creador de submetas...';
+            } else {
+                return '❌ Por favor, selecciona una meta primero para agregar una submeta.';
+            }
         }
         
         return null; 
+    }
+
+    async function getAITaskSuggestions(userDescription) {
+        try {
+            const financialSituation = state.metrics ? {
+                income: state.metrics.analysis.total_income,
+                expenses: state.metrics.analysis.total_expenses,
+                balance: state.metrics.analysis.balance
+            } : null;
+
+            const requestData = {
+                description: userDescription,
+                financial_situation: financialSituation
+            };
+
+            const response = await fetch('/api/ai/suggest-tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                return result.data.suggestions;
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+        } catch (error) {
+            console.error('Error getting AI task suggestions:', error);
+            return `Basándome en tu descripción "${userDescription}", te sugiero crear metas específicas como: ahorro de emergencia, reducción de gastos, o inversión a largo plazo.`;
+        }
+    }
+
+    async function createSmartGoal(goalType, context) {
+        try {
+            const financialData = state.metrics ? {
+                income: state.metrics.analysis.total_income,
+                expenses: state.metrics.analysis.total_expenses,
+                balance: state.metrics.analysis.balance
+            } : null;
+
+            const requestData = {
+                goal_type: goalType,
+                context: context,
+                financial_data: financialData
+            };
+
+            const response = await fetch('/api/ai/create-smart-goal', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                return result.data.goal;
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+        } catch (error) {
+            console.error('Error creating smart goal:', error);
+            return {
+                title: `Meta de ${goalType}`,
+                description: `Meta personalizada para ${goalType}`,
+                target: 1000,
+                deadline: "6 meses",
+                priority: "medium",
+                strategy: "Define tu estrategia personalizada."
+            };
+        }
     }
 
     function clearChatHistory(goalId = null) {
@@ -500,6 +610,388 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetInitialization() {
         state.initialized = false;
         console.log('Initialization state reset');
+    }
+
+    function showAISuggestionsModal() {
+        console.log('Opening AI suggestions modal...');
+        
+        const existingModal = document.getElementById('aiSuggestionsModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        const modal = document.createElement('div');
+        modal.className = 'ai-suggestions-modal';
+        modal.id = 'aiSuggestionsModal';
+        
+        modal.innerHTML = `
+            <div class="ai-suggestions-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #2d3748;">🤖 Sugerencias de AI</h3>
+                    <button class="close-modal-btn" id="closeAISuggestionsModalBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="suggestionInput" style="display: block; margin-bottom: 8px; font-weight: 600; color: #4a5568;">
+                        Describe lo que quieres lograr:
+                    </label>
+                    <textarea id="suggestionInput" placeholder="Ej: Quiero ahorrar para un viaje, reducir mis gastos mensuales, o invertir para mi jubilación..." 
+                              style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; resize: vertical; min-height: 80px;"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="cancel-btn" id="cancelAISuggestionsBtn">Cancelar</button>
+                    <button class="create-btn" id="generateSuggestionsBtn">
+                        <i class="fas fa-magic"></i> Generar Sugerencias
+                    </button>
+                </div>
+                <div id="suggestionsContainer" style="margin-top: 20px;"></div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        console.log('AI suggestions modal added to DOM');
+        
+        const closeBtn = document.getElementById('closeAISuggestionsModalBtn');
+        const cancelBtn = document.getElementById('cancelAISuggestionsBtn');
+        const generateBtn = document.getElementById('generateSuggestionsBtn');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeAISuggestionsModal);
+            console.log('Close button event listener added');
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', closeAISuggestionsModal);
+            console.log('Cancel button event listener added');
+        }
+        if (generateBtn) {
+            generateBtn.addEventListener('click', generateSuggestions);
+            console.log('Generate button event listener added');
+        }
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeAISuggestionsModal();
+            }
+        });
+        
+        setTimeout(() => {
+            const input = document.getElementById('suggestionInput');
+            if (input) {
+                input.focus();
+                console.log('Input field focused');
+            } else {
+                console.warn('Input field not found');
+            }
+        }, 100);
+    }
+
+    function closeAISuggestionsModal() {
+        console.log('Closing AI suggestions modal...');
+        const modal = document.getElementById('aiSuggestionsModal');
+        if (modal) {
+            const closeBtn = document.getElementById('closeAISuggestionsModalBtn');
+            const cancelBtn = document.getElementById('cancelAISuggestionsBtn');
+            const generateBtn = document.getElementById('generateSuggestionsBtn');
+            
+            if (closeBtn) closeBtn.removeEventListener('click', closeAISuggestionsModal);
+            if (cancelBtn) cancelBtn.removeEventListener('click', closeAISuggestionsModal);
+            if (generateBtn) generateBtn.removeEventListener('click', generateSuggestions);
+            
+            modal.remove();
+            console.log('AI suggestions modal removed from DOM');
+        } else {
+            console.warn('AI suggestions modal not found');
+        }
+    }
+
+    async function generateSuggestions() {
+        console.log('Generating AI suggestions...');
+        const input = document.getElementById('suggestionInput');
+        const container = document.getElementById('suggestionsContainer');
+        const btn = document.getElementById('generateSuggestionsBtn');
+        
+        if (!input || !input.value.trim()) {
+            alert('Por favor, describe lo que quieres lograr.');
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+        
+        try {
+            console.log('Getting AI task suggestions for:', input.value.trim());
+            const suggestions = await getAITaskSuggestions(input.value.trim());
+            console.log('AI suggestions received:', suggestions);
+            
+            container.innerHTML = `
+                <div style="margin-bottom: 16px;">
+                    <h4 style="color: #2d3748; margin-bottom: 12px;">💡 Sugerencias de AI:</h4>
+                    <div style="background: #f7fafc; padding: 16px; border-radius: 8px; border-left: 4px solid #667eea;">
+                        <div style="white-space: pre-wrap; line-height: 1.6; color: #4a5568;">${suggestions}</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <h4 style="color: #2d3748; margin-bottom: 12px;">🚀 Crear Meta Inteligente:</h4>
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <input type="text" id="smartGoalTitle" placeholder="Título de la meta" 
+                               style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                        <input type="number" id="smartGoalTarget" placeholder="Meta (€)" 
+                               style="width: 120px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <select id="smartGoalDeadline" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                            <option value="1 mes">1 mes</option>
+                            <option value="3 meses">3 meses</option>
+                            <option value="6 meses" selected>6 meses</option>
+                            <option value="1 año">1 año</option>
+                            <option value="2 años">2 años</option>
+                        </select>
+                        <select id="smartGoalPriority" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                            <option value="low">Baja</option>
+                            <option value="medium" selected>Media</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
+                    <textarea id="smartGoalDescription" placeholder="Descripción de la meta" 
+                              style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; resize: vertical; min-height: 60px;"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="cancel-btn" id="closeAISuggestionsBtn">Cerrar</button>
+                    <button class="create-btn" id="createSmartGoalBtn">
+                        <i class="fas fa-plus"></i> Crear Meta
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('closeAISuggestionsBtn').addEventListener('click', closeAISuggestionsModal);
+            document.getElementById('createSmartGoalBtn').addEventListener('click', createSmartGoalFromSuggestion);
+            
+        } catch (error) {
+            console.error('Error generating suggestions:', error);
+            container.innerHTML = `
+                <div style="color: #e53e3e; padding: 16px; background: #fed7d7; border-radius: 8px; margin-bottom: 16px;">
+                    Error al generar sugerencias. Por favor, inténtalo de nuevo.
+                </div>
+            `;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-magic"></i> Generar Sugerencias';
+        }
+    }
+
+    function createSmartGoalFromSuggestion() {
+        console.log('Creating smart goal from suggestion...');
+        
+        const title = document.getElementById('smartGoalTitle').value.trim();
+        const target = parseFloat(document.getElementById('smartGoalTarget').value) || 0;
+        const deadline = document.getElementById('smartGoalDeadline').value;
+        const priority = document.getElementById('smartGoalPriority').value;
+        const description = document.getElementById('smartGoalDescription').value.trim();
+        
+        if (!title) {
+            alert('Por favor, ingresa un título para la meta.');
+            return;
+        }
+        
+        if (target <= 0) {
+            alert('Por favor, ingresa una meta monetaria válida.');
+            return;
+        }
+        
+        const newGoal = {
+            id: Date.now(),
+            title: title,
+            description: description || `Meta creada con AI: ${title}`,
+            target: target,
+            current: 0,
+            deadline: deadline,
+            priority: priority,
+            strategy: 'Estrategia personalizada basada en sugerencias de AI.',
+            parentId: null, 
+            subgoals: [] 
+        };
+        
+        state.goals.push(newGoal);
+        
+        closeAISuggestionsModal();
+        
+        selectGoal(newGoal.id);
+        
+        addMessage('assistant', `¡Perfecto! He creado tu nueva meta "${title}" con una meta de ${target}€ para ${deadline}. ¡Ahora puedes empezar a trabajar en ella!`, true);
+        
+        renderGoals();
+    }
+
+    function addSubgoal(parentGoalId) {
+        console.log('Adding subgoal for parent:', parentGoalId);
+        
+        const parentGoal = state.goals.find(g => g.id === parentGoalId);
+        if (!parentGoal) {
+            console.error('Parent goal not found:', parentGoalId);
+            alert('Error: No se encontró la meta padre.');
+            return;
+        }
+        
+        const existingModal = document.getElementById('subgoalModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        const modal = document.createElement('div');
+        modal.className = 'subgoal-modal';
+        modal.id = 'subgoalModal';
+        
+        modal.innerHTML = `
+            <div class="subgoal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #2d3748;">📋 Agregar Submeta</h3>
+                    <button class="close-modal-btn" id="closeSubgoalModalBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form class="subgoal-form" id="subgoalForm">
+                    <div class="subgoal-form-group">
+                        <label for="subgoalTitle">Título de la submeta</label>
+                        <input type="text" id="subgoalTitle" placeholder="Ej: Ahorrar para el vuelo" required>
+                    </div>
+                    <div class="subgoal-form-row">
+                        <div class="subgoal-form-group">
+                            <label for="subgoalTarget">Meta (€)</label>
+                            <input type="number" id="subgoalTarget" placeholder="500" min="0" step="0.01" required>
+                        </div>
+                        <div class="subgoal-form-group">
+                            <label for="subgoalDeadline">Plazo</label>
+                            <select id="subgoalDeadline" required>
+                                <option value="1 mes">1 mes</option>
+                                <option value="2 meses">2 meses</option>
+                                <option value="3 meses" selected>3 meses</option>
+                                <option value="6 meses">6 meses</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="subgoal-form-group">
+                        <label for="subgoalDescription">Descripción</label>
+                        <textarea id="subgoalDescription" placeholder="Describe esta submeta..." rows="3"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+                        <button type="button" class="cancel-btn" id="cancelSubgoalBtn">Cancelar</button>
+                        <button type="submit" class="create-btn">
+                            <i class="fas fa-plus"></i> Crear Submeta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        console.log('Subgoal modal added to DOM');
+        
+        const closeBtn = document.getElementById('closeSubgoalModalBtn');
+        const cancelBtn = document.getElementById('cancelSubgoalBtn');
+        const form = document.getElementById('subgoalForm');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeSubgoalModal);
+            console.log('Close button event listener added');
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', closeSubgoalModal);
+            console.log('Cancel button event listener added');
+        }
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                createSubgoal(parentGoalId);
+            });
+            console.log('Form event listener added');
+        }
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeSubgoalModal();
+            }
+        });
+        
+        setTimeout(() => {
+            const input = document.getElementById('subgoalTitle');
+            if (input) {
+                input.focus();
+                console.log('Subgoal title input focused');
+            } else {
+                console.warn('Subgoal title input not found');
+            }
+        }, 100);
+    }
+
+    function closeSubgoalModal() {
+        console.log('Closing subgoal modal...');
+        const modal = document.getElementById('subgoalModal');
+        if (modal) {
+            modal.remove();
+            console.log('Subgoal modal removed from DOM');
+        } else {
+            console.warn('Subgoal modal not found');
+        }
+    }
+
+    function createSubgoal(parentGoalId) {
+        console.log('Creating subgoal for parent:', parentGoalId);
+        
+  
+        const titleInput = document.getElementById('subgoalTitle');
+        const targetInput = document.getElementById('subgoalTarget');
+        const deadlineInput = document.getElementById('subgoalDeadline');
+        const descriptionInput = document.getElementById('subgoalDescription');
+        
+        if (!titleInput || !targetInput || !deadlineInput || !descriptionInput) {
+            console.error('Form inputs not found');
+            alert('Error: No se encontraron los campos del formulario.');
+            return;
+        }
+        
+        const title = titleInput.value.trim();
+        const target = parseFloat(targetInput.value) || 0;
+        const deadline = deadlineInput.value;
+        const description = descriptionInput.value.trim();
+        
+        if (!title) {
+            alert('Por favor, ingresa un título para la submeta.');
+            return;
+        }
+        
+        if (target <= 0) {
+            alert('Por favor, ingresa una meta monetaria válida.');
+            return;
+        }
+        
+        const subgoal = {
+            id: Date.now(),
+            title: title,
+            description: description || `Submeta: ${title}`,
+            target: target,
+            current: 0,
+            deadline: deadline,
+            priority: 'medium',
+            strategy: 'Estrategia específica para esta submeta.',
+            parentId: parentGoalId
+        };
+        
+        const parentGoal = state.goals.find(g => g.id === parentGoalId);
+        if (parentGoal) {
+            if (!parentGoal.subgoals) {
+                parentGoal.subgoals = [];
+            }
+            parentGoal.subgoals.push(subgoal);
+            
+            closeSubgoalModal();
+            
+            renderGoals();
+            
+            addMessage('assistant', `¡Perfecto! He creado la submeta "${title}" para tu meta "${parentGoal.title}".`, true);
+        } else {
+            alert('Error: No se encontró la meta padre.');
+        }
     }
 
     function showBreakdown(type) {
@@ -570,6 +1062,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (confirm('¿Estás seguro de que quieres limpiar todo el historial de chat?')) {
                     clearChatHistory();
                 }
+            }
+        });
+
+        // AI suggestions button
+        if (elements.aiSuggestBtn) {
+            elements.aiSuggestBtn.addEventListener('click', showAISuggestionsModal);
+            console.log('AI suggest button event listener added');
+        } else {
+            console.warn('AI suggest button not found');
+        }
+
+        elements.goalsList.addEventListener('click', (e) => {
+            if (e.target.closest('.add-subgoal-btn')) {
+                const button = e.target.closest('.add-subgoal-btn');
+                const goalId = parseInt(button.dataset.goalId);
+                console.log('Subgoal button clicked for goal:', goalId);
+                addSubgoal(goalId);
             }
         });
     }
