@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         goals: [],
         selectedGoalId: null,
         chatHistory: {},
+        initialized: false, 
     };
 
     // --- DOM ELEMENTS ---
@@ -253,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             saveChatHistoryToStorage();
             
-            // 更新清除按钮的可见性
             updateClearButtonVisibility();
         }
         
@@ -284,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         restoreChatHistory(goalId);
         
-        // 更新清除按钮的可见性
         updateClearButtonVisibility();
     }
 
@@ -431,6 +430,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (input.includes('limpiar todo') || input.includes('borrar todo') || input.includes('clear all')) {
             clearChatHistory();
             return '✅ All chat history cleared.';
+        } else if (input.includes('reiniciar') || input.includes('reset') || input.includes('restart')) {
+            resetInitialization();
+            return '✅ Initialization state reset. You can now reinitialize if needed.';
         }
         
         return null; 
@@ -493,6 +495,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error loading chat history from localStorage:', error);
             state.chatHistory = {};
         }
+    }
+
+    function resetInitialization() {
+        state.initialized = false;
+        console.log('Initialization state reset');
     }
 
     function showBreakdown(type) {
@@ -568,6 +575,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function initialize() {
+        if (state.initialized) {
+            console.log('Financial Assistant already initialized, skipping...');
+            return;
+        }
+        
         console.log('Initializing Financial Assistant...');
         elements.openBtn.classList.add('show');
         
@@ -601,14 +613,16 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Selecting first goal...');
             selectGoal(1); // Select the first goal by default
             
-            // 更新清除按钮的可见性
             updateClearButtonVisibility();
+            
+            state.initialized = true;
             
             console.log('Initialization complete!');
 
         } catch (error) {
             console.error('Initialization Error:', error);
-            addMessage('assistant', 'Error al cargar los datos. Por favor, inténtalo más tarde.', false); 
+            addMessage('assistant', 'Error al cargar los datos. Por favor, inténtalo más tarde.', false);
+            state.initialized = false;
         }
     }
 
