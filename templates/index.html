@@ -3,266 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Windundis - Servicios de API Bancaria</title>
+    <title>Windundis - Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
                 <i class="fas fa-university"></i>
-                <span>Windundis</span>
+                <h1>Windundis</h1>
+                <p>Servicios de API Bancaria</p>
             </div>
-            <div class="nav-menu">
-                <a href="#home" class="nav-link">Inicio</a>
-                <a href="#api" class="nav-link">Documentación API</a>
-                <a href="#contact" class="nav-link">Contacto</a>
-            </div>
+            
+            <button id="loginBtn" class="btn btn-login">
+                <i class="fas fa-sign-in-alt"></i>
+                Iniciar Sesión
+            </button>
         </div>
-    </nav>
-
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="hero">
-            <div class="hero-container">
-                <div class="hero-content">
-                    <h1 class="hero-title">Bienvenido a Windundis Servicios de API Bancaria</h1>
-                    <p class="hero-subtitle">Solución de integración de API bancaria segura, rápida y confiable</p>
-                    <div class="hero-buttons">
-                        <a href="#api" class="btn btn-primary">Ver Documentación API</a>
-                        <a href="#demo" class="btn btn-secondary">Demo en Línea</a>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <i class="fas fa-credit-card hero-icon"></i>
-                </div>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section id="features" class="features">
-            <div class="container">
-                <h2 class="section-title">Funciones Principales</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                        <h3>Gestión de Cuentas</h3>
-                        <p>Ver y gestionar información de cuentas bancarias, obtener saldos y registros de transacciones en tiempo real</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
-                        <h3>Servicio de Transferencias</h3>
-                        <p>Funcionalidad de transferencia segura y rápida, compatible con múltiples monedas y procesamiento en tiempo real</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <h3>Procesamiento de Pagos</h3>
-                        <p>Sistema de pago integrado para comerciantes, compatible con compras en línea y pago de facturas</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- API Demo Section -->
-        <section id="demo" class="demo">
-            <div class="container">
-                <h2 class="section-title">Demo de API</h2>
-                <div class="demo-container">
-                    <div class="demo-tabs">
-                        <button class="tab-btn active" data-tab="accounts">Consulta de Cuentas</button>
-                        <button class="tab-btn" data-tab="transfer">Transferencia</button>
-                        <button class="tab-btn" data-tab="purchase">Pago</button>
-                    </div>
-                    
-                    <div class="demo-content">
-                        <div id="accounts" class="tab-content active">
-                            <h3>Consultar Información de Cuenta</h3>
-                            <div class="api-demo">
-                                <div class="api-method">GET</div>
-                                <div class="api-url">/api/accounts/{customer_id}</div>
-                                <button class="btn btn-primary" onclick="testAPI('accounts')">Probar API</button>
-                            </div>
-                            <div class="api-response" id="accounts-response"></div>
-                        </div>
-                        
-                        <div id="transfer" class="tab-content">
-                            <h3>Operación de Transferencia</h3>
-                            <div class="api-demo">
-                                <div class="api-method">POST</div>
-                                <div class="api-url">/api/transfer</div>
-                                <button class="btn btn-primary" onclick="testAPI('transfer')">Probar API</button>
-                            </div>
-                            <div class="api-response" id="transfer-response"></div>
-                        </div>
-                        
-                        <div id="purchase" class="tab-content">
-                            <h3>Procesamiento de Pago</h3>
-                            <div class="api-demo">
-                                <div class="api-method">POST</div>
-                                <div class="api-url">/api/purchase</div>
-                                <button class="btn btn-primary" onclick="testAPI('purchase')">Probar API</button>
-                            </div>
-                            <div class="api-response" id="purchase-response"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- API Documentation Section -->
-        <section id="api" class="api-docs">
-            <div class="container">
-                <h2 class="section-title">Documentación de API</h2>
-                <div class="api-endpoints">
-                    <div class="endpoint">
-                        <div class="endpoint-header">
-                            <span class="method get">GET</span>
-                            <span class="endpoint-url">/api/accounts/{customer_id}</span>
-                        </div>
-                        <p class="endpoint-desc">Obtener información de cuenta del cliente especificado</p>
-                        <div class="endpoint-params">
-                            <strong>Parámetros:</strong> customer_id (parámetro de ruta) - ID del cliente
-                        </div>
-                    </div>
-                    
-                    <div class="endpoint">
-                        <div class="endpoint-header">
-                            <span class="method post">POST</span>
-                            <span class="endpoint-url">/api/transfer</span>
-                        </div>
-                        <p class="endpoint-desc">Ejecutar operación de transferencia</p>
-                        <div class="endpoint-params">
-                            <strong>Cuerpo de la solicitud:</strong>
-                            <pre>{
-  "sender_account_id": "string",
-  "recipient_account_id": "string", 
-  "amount": number,
-  "description": "string"
-}</pre>
-                        </div>
-                    </div>
-                    
-                    <div class="endpoint">
-                        <div class="endpoint-header">
-                            <span class="method post">POST</span>
-                            <span class="endpoint-url">/api/purchase</span>
-                        </div>
-                        <p class="endpoint-desc">Procesar pago de compra</p>
-                        <div class="endpoint-params">
-                            <strong>Cuerpo de la solicitud:</strong>
-                            <pre>{
-  "account_id": "string",
-  "merchant_id": "string",
-  "item_name": "string",
-  "amount": number
-}</pre>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer id="contact" class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Windundis</h3>
-                    <p>Proveedor profesional de servicios de API bancaria</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Enlaces Rápidos</h4>
-                    <ul>
-                        <li><a href="#home">Inicio</a></li>
-                        <li><a href="#api">Documentación API</a></li>
-                        <li><a href="#demo">Demo</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Contáctanos</h4>
-                    <p><i class="fas fa-envelope"></i> contact@windundis.com</p>
-                    <p><i class="fas fa-phone"></i> +34 123-456-789</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Windundis. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
+    </div>
 
     <script>
-        // Funcionalidad de cambio de pestañas
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tabId = btn.getAttribute('data-tab');
-                
-                // Remover todas las clases active
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                // Agregar clase active a la pestaña seleccionada
-                btn.classList.add('active');
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
-
-        // Funcionalidad de prueba de API
-        function testAPI(type) {
-            const responseDiv = document.getElementById(type + '-response');
-            responseDiv.innerHTML = '<div class="loading">Probando API...</div>';
+        // 登录功能
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            // 显示加载状态
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesión...';
+            this.disabled = true;
             
-            // Simular llamada a API
-            setTimeout(() => {
-                let response;
-                switch(type) {
-                    case 'accounts':
-                        response = {
-                            "customer_id": "12345",
-                            "account_balance": 1500.00,
-                            "currency": "EUR",
-                            "status": "active"
-                        };
-                        break;
-                    case 'transfer':
-                        response = {
-                            "transaction_id": "TXN123456789",
-                            "status": "completed",
-                            "amount": 100.00,
-                            "timestamp": new Date().toISOString()
-                        };
-                        break;
-                    case 'purchase':
-                        response = {
-                            "purchase_id": "PUR123456789",
-                            "status": "success",
-                            "amount": 25.99,
-                            "merchant": "Comercio de Ejemplo"
-                        };
-                        break;
+            // 调用后端登录端点
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                redirect: 'manual', // 手动处理重定向
+                credentials: 'same-origin' // 包含cookies
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response type:', response.type);
+                
+                // 处理重定向响应
+                if (response.type === 'opaqueredirect' || response.status === 302 || response.status === 301) {
+                    // 对于重定向，我们需要从Location头获取URL
+                    const location = response.headers.get('Location');
+                    if (location) {
+                        window.location.href = location;
+                        return;
+                    }
                 }
                 
-                responseDiv.innerHTML = '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
-            }, 1000);
-        }
-
-        // Desplazamiento suave
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                // 处理正常响应
+                if (response.ok) {
+                    return response.json().then(data => {
+                        if (data.success && data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            throw new Error(data.error || 'Error desconocido');
+                        }
+                    });
+                } else {
+                    // 处理HTTP错误
+                    return response.text().then(text => {
+                        let errorMsg = `HTTP Error: ${response.status}`;
+                        try {
+                            const data = JSON.parse(text);
+                            errorMsg = data.error || errorMsg;
+                        } catch (e) {
+                            errorMsg = text || errorMsg;
+                        }
+                        throw new Error(errorMsg);
                     });
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al iniciar sesión: ' + error.message);
+                // 恢复按钮状态
+                this.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                this.disabled = false;
             });
         });
     </script>
