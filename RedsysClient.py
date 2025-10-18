@@ -76,24 +76,18 @@ class RedsysClient:
             return None
 
     def extract_code_from_redirect_url(self, redirect_url):
-        """
-        从重定向URL中提取code参数
-        Args:
-            redirect_url (str): 包含code参数的重定向URL
-        Returns:
-            str: 提取的code值，如果未找到则返回None
-        """
+        
         try:
             parsed_url = urlparse(redirect_url)
             query_params = parse_qs(parsed_url.query)
             
             if 'code' in query_params:
-                return query_params['code'][0]  # parse_qs返回列表，取第一个值
+                return query_params['code'][0]  # parse_qs devuelve una lista, tomar el primer valor
             else:
-                print("未在URL中找到code参数")
+                print("No se encontró el parámetro code en la URL")
                 return None
         except Exception as e:
-            print(f"解析URL时出错: {e}")
+            print(f"Error al analizar la URL: {e}")
             return None
 
     def get_access_token(self, code):
@@ -164,35 +158,6 @@ class RedsysClient:
             dict: API响应结果，包含支付ID和用户同意URL
         """
         try:
-            # 默认测试支付数据
-            if payment_data is None:
-                payment_data = {
-                    "instructedAmount": {
-                        "currency": "EUR",
-                        "amount": "500.00"
-                    },
-                    "debtorAccount": {
-                        "iban": "ES6200810602620003333338",
-                        "currency": "EUR"
-                    },
-                    "creditorAccount": {
-                        "iban": "ES2640000418401234567599",
-                        "currency": "EUR"
-                    },
-                    "creditorName": "Nombre Beneficiario",
-                    "creditorAgent": "XXXLESMMXXX",
-                    "creditorAddress": {
-                        "streetName": "Ejemplo de Calle",
-                        "buildingNumber": "5",
-                        "townName": "Cordoba",
-                        "postCode": "14100",
-                        "country": "ES"
-                    },
-                    "chargeBearer": "SHAR",
-                    "remittanceInformationUnstructured": "Concepto"
-                }
-            
-            # 支付API URL
             payment_url = "https://apis-i.redsys.es:20443/psd2/xs2a/api-entrada-xs2a/services/BancSabadell/v1.1/payments/sepa-credit-transfers"
             
             # 生成唯一的请求ID
@@ -205,7 +170,7 @@ class RedsysClient:
                 'Authorization': f'Bearer {access_token}',
                 'X-IBM-Client-Id': self._get_env_variable('CLIENT_ID'),
                 'Origin': 'https://market.apis-i.redsys.es',
-                'Refer': 'https://market.apis-i.redsys.es/',
+                'Referer': 'https://market.apis-i.redsys.es/',  
                 'TPP-Redirect-URI': 'http://localhost:8080',
                 'PSU-IP-Address': '192.168.1.1',
                 'Cookie': 'JSESSIONPSD2SANDBOX=000057hCGTTrfuLsCui-hO0-aYL:54f4f83818ad2e530218696453cc5c86'
@@ -217,7 +182,6 @@ class RedsysClient:
             # 检查响应状态
             response.raise_for_status()
             
-            # 返回JSON响应
             response_data = response.json()
             return {
                 'success': True,

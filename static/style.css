@@ -351,3 +351,68 @@ body {
         min-width: 180px;
     }
 }
+
+/* ==========================================================================
+   7. 图表样式 (Chart Styles)
+   ========================================================================== */
+
+.charts-section {
+    margin: calc(var(--spacing-unit) * 3) 0;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: calc(var(--spacing-unit) * 2);
+    margin-top: calc(var(--spacing-unit) * 2);
+}
+
+.chart-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-md);
+    padding: calc(var(--spacing-unit) * 2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: var(--transition-base);
+}
+
+.chart-container:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.chart-container h4 {
+    color: var(--color-text-light);
+    margin-bottom: calc(var(--spacing-unit) * 2);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.chart-container iframe {
+    border-radius: var(--border-radius-sm);
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式图表 */
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-unit);
+    }
+    
+    .chart-container {
+        padding: var(--spacing-unit);
+    }
+    
+    .chart-container iframe {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-container iframe {
+        height: 250px;
+    }
+}

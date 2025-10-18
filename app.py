@@ -7,6 +7,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from RedsysClient import RedsysClient
+from model.ALIA40b import analyze_with_charts
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -54,16 +55,13 @@ def get_token():
     
     try:
         data = request.get_json()
-        if not data or 'redirect_url' not in data:
-            return jsonify({"success": False, "error": "缺少redirect_url参数"}), 400
         
         redirect_url = data['redirect_url']
         
         client = RedsysClient(env_filepath='redsys.env')
         
-        # 从重定向URL中提取code
         code = client.extract_code_from_redirect_url(redirect_url)
-        
+        print("code", code)
         if not code:
             return jsonify({"success": False, "error": "无法从URL中提取code参数"}), 400
         
@@ -102,10 +100,8 @@ def create_payment():
         payment_data = data.get('payment_data', None)  # 可选的支付数据
         
         client = RedsysClient(env_filepath='redsys.env')
-        print("data", data)
         # 创建支付请求
         payment_result = client.create_payment_request(access_token, payment_data)
-        print("payment_result", payment_result)
         if payment_result['success']:
             payment_response = payment_result['data']
             
@@ -173,6 +169,49 @@ def check_payment_status():
         return jsonify({"success": False, "error": f"Archivo de configuración no encontrado: {str(e)}"}), 500
     except Exception as e:
         return jsonify({"success": False, "error": f"Error interno: {str(e)}"}), 500
+
+@app.route('/api/analyze', methods=['POST', 'OPTIONS'])
+def analyze_financial_data():
+    """分析财务数据并生成图表"""
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        if not data or 'bank_data' not in data:
+            return jsonify({"success": False, "error": "缺少bank_data参数"}), 400
+        
+        bank_data = data['bank_data']
+        
+        # 分析数据并生成图表
+        result = analyze_with_charts(bank_data)
+        
+        # 转换图表路径为相对路径
+        charts = {}
+        for chart_name, chart_path in result['charts'].items():
+            if chart_path:
+                # 转换为相对于static的路径
+                relative_path = chart_path.replace('static/', '')
+                charts[chart_name] = relative_path
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "analysis": result['analysis'],
+                "profile": result['profile'],
+                "charts": charts,
+                "detailed_report": result['detailed_report'],
+                "simplified_text": result['simplified_text'],
+                "translated_text": result['translated_text'],
+                "goals": result['goals'],
+                "incentives": result['incentives'],
+                "transactions": result['transactions']
+            },
+            "message": "Análisis financiero completado exitosamente"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Error en análisis: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080) 

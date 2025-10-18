@@ -81,7 +81,6 @@
                         <textarea readonly class="info-section__textarea">${tokenData.access_token || 'N/A'}</textarea>
                         <p><strong>Token Type:</strong> ${tokenData.token_type || 'N/A'}</p>
                         <p><strong>Expires In:</strong> ${tokenData.expires_in || 'N/A'} segundos</p>
-                        <p><strong>Scope:</strong> ${tokenData.scope || 'N/A'}</p>
                     </div>
                 </div>
                 <!-- 同样使用 info-section 组件 -->
@@ -275,6 +274,10 @@
                         <i class="fas fa-sync-alt"></i>
                         Actualizar Estado
                     </button>
+                    <button class="btn btn--primary" onclick="analyzeFinancialData('${accessToken}')">
+                        <i class="fas fa-chart-line"></i>
+                        Análisis Financiero
+                    </button>
                 </div>
                 <button onclick="location.reload()" class="btn btn--primary">
                     <i class="fas fa-redo"></i>
@@ -418,6 +421,132 @@
                     if (data.success) { showSuccessState(data.data); } else { showErrorState(data.error); }
                 })
                 .catch(error => showErrorState('Error de conexión: ' + error.message));
+        }
+
+        function analyzeFinancialData(accessToken) {
+            // Mostrar estado de procesamiento
+            appCard.innerHTML = `
+                <div class="login-header">
+                    <i class="fas fa-spinner fa-spin icon"></i>
+                    <h1>Analizando Datos Financieros</h1>
+                    <p>Generando gráficos y recomendaciones...</p>
+                </div>
+            `;
+
+            // Datos de ejemplo para el análisis (en un caso real, estos vendrían de la API bancaria)
+            const sampleBankData = {
+                "account": {"iban": "ES6200810602620003333338", "currency": "EUR"},
+                "transactions": {"booked": [
+                    {"transactionId": "TXN001", "bookingDate": "2025-02-01", "transactionAmount": {"currency": "EUR", "amount": "2500.00"}, "remittanceInformationUnstructured": "Salario mensual"},
+                    {"transactionId": "TXN002", "bookingDate": "2025-02-01", "transactionAmount": {"currency": "EUR", "amount": "-2.40"}, "remittanceInformationUnstructured": "Comisión bancaria"},
+                    {"transactionId": "TXN003", "bookingDate": "2025-02-02", "transactionAmount": {"currency": "EUR", "amount": "-45.50"}, "creditorName": "Carrefour", "remittanceInformationUnstructured": "Supermercado"},
+                    {"transactionId": "TXN004", "bookingDate": "2025-02-02", "transactionAmount": {"currency": "EUR", "amount": "-25.00"}, "creditorName": "La Barba Peluquería", "remittanceInformationUnstructured": "Servicio"},
+                    {"transactionId": "TXN005", "bookingDate": "2025-02-03", "transactionAmount": {"currency": "EUR", "amount": "-55.00"}, "creditorName": "Restaurante El Chef", "remittanceInformationUnstructured": "Restaurante"},
+                    {"transactionId": "TXN006", "bookingDate": "2025-02-03", "transactionAmount": {"currency": "EUR", "amount": "-60.00"}, "creditorName": "Repsol", "remittanceInformationUnstructured": "Combustible"},
+                    {"transactionId": "TXN007", "bookingDate": "2025-02-04", "transactionAmount": {"currency": "EUR", "amount": "-12.99"}, "creditorName": "Netflix", "remittanceInformationUnstructured": "Suscripción"},
+                    {"transactionId": "TXN008", "bookingDate": "2025-02-05", "transactionAmount": {"currency": "EUR", "amount": "-89.99"}, "creditorName": "Decathlon", "remittanceInformationUnstructured": "Ropa deportiva"},
+                    {"transactionId": "TXN009", "bookingDate": "2025-02-05", "transactionAmount": {"currency": "EUR", "amount": "-35.00"}, "creditorName": "Vodafone", "remittanceInformationUnstructured": "Factura teléfono"},
+                    {"transactionId": "TXN010", "bookingDate": "2025-02-06", "transactionAmount": {"currency": "EUR", "amount": "-42.00"}, "creditorName": "Cines Yelmo", "remittanceInformationUnstructured": "Cine"},
+                    {"transactionId": "TXN011", "bookingDate": "2025-02-07", "transactionAmount": {"currency": "EUR", "amount": "-150.00"}, "creditorName": "Travel Booking", "remittanceInformationUnstructured": "Viaje"},
+                    {"transactionId": "TXN012", "bookingDate": "2025-02-07", "transactionAmount": {"currency": "EUR", "amount": "-22.50"}, "creditorName": "Café Central", "remittanceInformationUnstructured": "Café"},
+                ]}
+            };
+
+            fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bank_data: sampleBankData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showFinancialAnalysisState(data.data);
+                } else {
+                    showErrorState('Error en análisis: ' + data.error);
+                }
+            })
+            .catch(error => showErrorState('Error de conexión: ' + error.message));
+        }
+
+        function showFinancialAnalysisState(analysisData) {
+            const charts = analysisData.charts;
+            const analysis = analysisData.analysis;
+            const profile = analysisData.profile;
+            
+            let chartsHtml = '';
+            if (charts && Object.keys(charts).length > 0) {
+                chartsHtml = `
+                    <div class="charts-section">
+                        <h3 class="info-section__title">📊 Gráficos de Análisis</h3>
+                        <div class="charts-grid">
+                            ${Object.entries(charts).map(([name, path]) => `
+                                <div class="chart-container">
+                                    <h4>${getChartTitle(name)}</h4>
+                                    <iframe src="/static/${path}" width="100%" height="400" frameborder="0"></iframe>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            appCard.innerHTML = `
+                <div class="login-header">
+                    <i class="fas fa-chart-line icon success"></i>
+                    <h1>Análisis Financiero Completo</h1>
+                    <p>Tu perfil: <strong>${profile.profile_type}</strong></p>
+                </div>
+                
+                <div class="info-section">
+                    <h3 class="info-section__title">💰 Resumen Financiero</h3>
+                    <div class="card__details">
+                        <p><strong>Ingresos:</strong> +${analysis.total_income.toFixed(2)}€</p>
+                        <p><strong>Gastos:</strong> -${analysis.total_expenses.toFixed(2)}€</p>
+                        <p><strong>Balance:</strong> ${analysis.balance >= 0 ? '+' : ''}${analysis.balance.toFixed(2)}€</p>
+                        <p><strong>Ratio de gastos:</strong> ${profile.expense_ratio.toFixed(1)}%</p>
+                        <p><strong>Volatilidad:</strong> ${profile.expense_volatility.toFixed(2)}€</p>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3 class="info-section__title">🎯 Presupuesto 50-30-20</h3>
+                    <div class="card__details">
+                        <p><strong>Essentials (50%):</strong> ${profile.actual_essentials.toFixed(2)}€ / ${profile.ideal_essentials.toFixed(2)}€</p>
+                        <p><strong>Ocio (30%):</strong> ${profile.actual_discretionary.toFixed(2)}€ / ${profile.ideal_discretionary.toFixed(2)}€</p>
+                        <p><strong>Ahorros (20%):</strong> ${profile.actual_savings.toFixed(2)}€ / ${profile.ideal_savings.toFixed(2)}€</p>
+                    </div>
+                </div>
+
+                ${chartsHtml}
+
+                <div class="info-section">
+                    <h3 class="info-section__title">💡 Recomendaciones</h3>
+                    <div class="card__details">
+                        ${profile.recommendations.map(rec => `<p>• ${rec}</p>`).join('')}
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn--primary" onclick="location.reload()">
+                        <i class="fas fa-home"></i>
+                        Volver al Inicio
+                    </button>
+                </div>
+            `;
+        }
+
+        function getChartTitle(chartName) {
+            const titles = {
+                'expense_pie': 'Distribución de Gastos',
+                'income_expenses': 'Ingresos vs Gastos',
+                'budget_50_30_20': 'Presupuesto 50-30-20',
+                'savings_trend': 'Tendencia de Ahorro',
+                'expense_volatility': 'Volatilidad de Gastos',
+                'savings_recommendations': 'Recomendaciones de Ahorro',
+                'profile_radar': 'Perfil Financiero',
+                'savings_guide': 'Guía de Ahorro'
+            };
+            return titles[chartName] || chartName;
         }
 
         document.addEventListener('DOMContentLoaded', function () {

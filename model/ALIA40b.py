@@ -4,6 +4,12 @@ from collections import defaultdict
 from typing import List, Tuple, Dict
 from datetime import datetime
 import re
+import sys
+import os
+
+# Agregar el directorio padre al path para importar charts
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from charts import FinancialCharts
 
 # =================================================================
 # --- CONFIGURACIÓN ---
@@ -633,10 +639,64 @@ def generate_incentives(profile: Dict) -> List[str]:
 # --- FUNCIÓN PRINCIPAL ---
 # =================================================================
 
+def analyze_with_charts(bank_data: Dict) -> Dict:
+    """
+    Función principal que analiza datos bancarios y genera gráficos
+    Retorna diccionario con análisis y rutas de gráficos
+    """
+    # Inicializar generador de gráficos
+    chart_generator = FinancialCharts()
+    
+    # Procesar transacciones
+    transactions = parse_bank_transactions(bank_data)
+    
+    # Clasificar transacciones
+    classified_results = []
+    for description, amount, date in transactions:
+        classification = classify_transaction(description, amount, date)
+        classified_results.append((classification, amount, date))
+    
+    # Analizar datos
+    analysis = analyze_transactions(classified_results)
+    profile = analyze_financial_profile(analysis)
+    
+    # Generar gráficos
+    charts = {}
+    try:
+        charts = chart_generator.generate_all_charts(analysis, profile)
+        charts['savings_guide'] = chart_generator.create_savings_guide_chart(profile)
+    except Exception as e:
+        print(f"Error generando gráficos: {e}")
+    
+    # Generar reportes
+    detailed_report = generate_detailed_report(analysis)
+    simplified_text = simplify_text(detailed_report)
+    translated_text = translate_to_basque(simplified_text)
+    
+    # Generar metas e incentivos
+    goals = generate_personalized_goals(profile, analysis)
+    incentives = generate_incentives(profile)
+    
+    return {
+        'analysis': analysis,
+        'profile': profile,
+        'charts': charts,
+        'detailed_report': detailed_report,
+        'simplified_text': simplified_text,
+        'translated_text': translated_text,
+        'goals': goals,
+        'incentives': incentives,
+        'transactions': classified_results
+    }
+
+
 def main():
     print("\n" + "="*70)
     print("ANALIZADOR FINANCIERO - FORMATO BANCARIO v2.0")
     print("="*70 + "\n")
+    
+    # Inicializar generador de gráficos
+    chart_generator = FinancialCharts()
     
     bank_data = {
         "account": {"iban": "ES6200810602620003333338", "currency": "EUR"},
@@ -738,6 +798,32 @@ def main():
     incentives = generate_incentives(profile)
     for incentive in incentives:
         print(incentive)
+    
+    print()
+    
+    print("PASO 10: Generando gráficos de análisis...")
+    print("-" * 70)
+    try:
+        charts = chart_generator.generate_all_charts(analysis, profile)
+        savings_guide = chart_generator.create_savings_guide_chart(profile)
+        
+        print("Gráficos generados exitosamente:")
+        for chart_name, chart_path in charts.items():
+            if chart_path:
+                print(f"  📊 {chart_name}: {chart_path}")
+        
+        if savings_guide:
+            print(f"  📈 Guía de ahorro: {savings_guide}")
+            
+        print("\n💡 Los gráficos te ayudarán a:")
+        print("   • Visualizar tu distribución de gastos")
+        print("   • Comparar ingresos vs gastos")
+        print("   • Ver tu progreso en el presupuesto 50-30-20")
+        print("   • Entender tu perfil financiero")
+        print("   • Identificar oportunidades de ahorro")
+        
+    except Exception as e:
+        print(f"Error generando gráficos: {e}")
     
     print()
     print("="*70)
