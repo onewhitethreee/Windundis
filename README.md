@@ -68,7 +68,7 @@ Una aplicación web inteligente que combina análisis financiero con IA para ayu
 
 ### 1. Clonar el Repositorio
 ```bash
-git clone <repository-url>
+git clone https://github.com/onewhitethreee/Windundis.git
 cd Windundis
 ```
 
