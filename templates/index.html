@@ -5,17 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Assistant - Copilot</title>
-    <!-- 外部图标库 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- 链接外部CSS文件 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <!-- 遮罩层 -->
     <div class="modal-overlay" id="modalOverlay"></div>
 
-    <!-- 创建新目标的模态框 -->
     <div class="modal-overlay-container" id="createGoalModalContainer">
         <div class="create-goal-modal">
             <div class="modal-header">
@@ -77,7 +73,6 @@
         </div>
     </div>
 
-    <!-- 主容器 -->
     <div class="container" id="container">
         <header class="header">
             <div class="header-left">
@@ -140,12 +135,10 @@
         </main>
     </div>
 
-    <!-- 浮动按钮 -->
     <button class="open-copilot-btn" id="openCopilotBtn" aria-label="Abrir asistente financiero">
         <i class="fas fa-comments"></i>
     </button>
 
-    <!-- 链接外部JavaScript文件 -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 
