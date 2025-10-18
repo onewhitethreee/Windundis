@@ -413,4 +413,4 @@ def create_smart_goal():
         return jsonify({"success": False, "error": f"Error creando meta inteligente: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080) 
+    app.run(debug=True, port=8080, host='0.0.0.0') 
