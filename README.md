@@ -44,9 +44,52 @@ Una aplicación web inteligente que combina análisis financiero con IA para ayu
 - **NumPy** - Cálculos numéricos
 
 ### IA y Machine Learning
-- **ALIA-40b** - Modelo de IA para análisis financiero
-- **Salamandra-7b** - Modelo para simplificación y chat
-- **PublicAI API** - Servicio de IA en la nube
+### IA y Machine Learning
+
+El proyecto utiliza múltiples modelos de IA especializados a través de **PublicAI API**:
+
+#### ALIA-40b (Modelo Principal)
+- **Especialización**: Análisis financiero profundo y estratégico
+- **Capacidades**:
+  - Análisis exhaustivo de patrones financieros complejos
+  - Detección de anomalías y comportamientos atípicos en transacciones
+  - Generación de estrategias de optimización personalizadas
+  - Evaluación de riesgos financieros y oportunidades de inversión
+  - Creación de planes de ahorro sofisticados con proyecciones a largo plazo
+  - Análisis predictivo basado en tendencias históricas
+  - Recomendaciones estratégicas contextualizadas al perfil del usuario
+- **Uso en Windundis**: Motor principal para todo el análisis financiero avanzado y generación de insights estratégicos
+
+#### mRoBERTa (Modelo de Evaluación de Complejidad)
+- **Especialización**: Análisis de complejidad lingüística
+- **Función crítica**: Evaluación automática de la dificultad del texto generado por ALIA-40b
+- **Flujo de trabajo**:
+  1. ALIA-40b genera análisis financiero detallado
+  2. mRoBERTa calcula score de dificultad del texto (0-1.0)
+  3. Si score > umbral configurado → Salamandra-7b simplifica automáticamente
+  4. Si score ≤ umbral → Texto se mantiene sin modificaciones
+- **Beneficios**:
+  - Adaptación automática al nivel del usuario
+  - Garantiza accesibilidad de la información financiera
+  - Optimiza recursos (solo simplifica cuando es necesario)
+  - Mejora la experiencia de usuario sin intervención manual
+- **Uso en Windundis**: Capa intermedia de control de calidad que decide si es necesaria la simplificación del contenido
+
+#### Salamandra-7b
+- **Especialización**: Procesamiento de lenguaje natural y conversaciones
+- **Capacidades**:
+  - Simplificación de conceptos financieros complejos
+  - Explicaciones didácticas y educación financiera
+  - Respuestas rápidas a preguntas específicas
+  - Generación de mensajes motivacionales personalizados
+
+#### Latxa
+- **Especialización**: Traducción al euskera
+- **Objetivo estratégico**: Captar audiencia de todas las regiones de España mediante soporte de lenguas cooficiales
+- **Implementación actual**:
+  - Traducción de recomendaciones y consejos de Salamandra-7b
+- **Limitación identificada**: Funciona óptimamente para traducir contenido ya generado, pero no permite cambiar dinámicamente el idioma de toda la interfaz de usuario (requeriría implementación de sistema i18n completo)
+- **Uso en Windundis**: Capa de traducción post-generación para accesibilidad en euskera
 
 ### Frontend
 - **HTML5/CSS3** - Estructura y estilos
